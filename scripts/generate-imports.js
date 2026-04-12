@@ -10,6 +10,19 @@ const sectionsPath = path.join(__dirname, '../public/data/sections.json');
 const tariffPath = path.join(__dirname, '../public/data/tariff.json');
 const outputPath = path.join(__dirname, '../public/data/imports.json');
 
+console.log('[v0] Script directory:', __dirname);
+console.log('[v0] Sections path:', sectionsPath);
+
+// Ensure paths exist
+if (!fs.existsSync(sectionsPath)) {
+  console.error('[v0] sections.json not found at:', sectionsPath);
+  process.exit(1);
+}
+if (!fs.existsSync(tariffPath)) {
+  console.error('[v0] tariff.json not found at:', tariffPath);
+  process.exit(1);
+}
+
 // Country codes with realistic trade shares
 const COUNTRY_POOLS = {
   americas: [
