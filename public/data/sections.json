@@ -11,8 +11,8 @@
       5
     ],
     "description": "Live animals, meat, fish, dairy, eggs, honey",
-    "codeCount": 0,
-    "dutiableCount": 0,
+    "codeCount": 714,
+    "dutiableCount": 140,
     "totalImports": 0,
     "surtaxAffected": 0,
     "topSources": []
@@ -33,8 +33,8 @@
       14
     ],
     "description": "Plants, vegetables, fruit, nuts, coffee, spices, cereals",
-    "codeCount": 0,
-    "dutiableCount": 0,
+    "codeCount": 713,
+    "dutiableCount": 97,
     "totalImports": 0,
     "surtaxAffected": 0,
     "topSources": []
@@ -47,8 +47,8 @@
       15
     ],
     "description": "Edible fats, oils, and waxes",
-    "codeCount": 0,
-    "dutiableCount": 0,
+    "codeCount": 78,
+    "dutiableCount": 29,
     "totalImports": 0,
     "surtaxAffected": 0,
     "topSources": []
@@ -69,8 +69,8 @@
       24
     ],
     "description": "Processed foods, beverages, sugar, tobacco",
-    "codeCount": 0,
-    "dutiableCount": 0,
+    "codeCount": 863,
+    "dutiableCount": 252,
     "totalImports": 0,
     "surtaxAffected": 0,
     "topSources": []
@@ -85,7 +85,7 @@
       27
     ],
     "description": "Salt, sulphur, ores, mineral fuels, oils",
-    "codeCount": 127,
+    "codeCount": 236,
     "dutiableCount": 6,
     "totalImports": 54691117017,
     "surtaxAffected": 0,
@@ -135,7 +135,7 @@
       38
     ],
     "description": "Chemicals, pharmaceuticals, fertilizers, dyes, soaps",
-    "codeCount": 826,
+    "codeCount": 1307,
     "dutiableCount": 106,
     "totalImports": 75960186624,
     "surtaxAffected": 0,
@@ -176,10 +176,10 @@
       40
     ],
     "description": "Plastics, rubber and articles thereof",
-    "codeCount": 185,
+    "codeCount": 413,
     "dutiableCount": 38,
     "totalImports": 36911267085,
-    "surtaxAffected": 0,
+    "surtaxAffected": 2,
     "topSources": [
       {
         "k": "US",
@@ -218,7 +218,7 @@
       43
     ],
     "description": "Raw hides, leather goods, travel goods, furskins",
-    "codeCount": 69,
+    "codeCount": 115,
     "dutiableCount": 22,
     "totalImports": 2901582440,
     "surtaxAffected": 0,
@@ -260,7 +260,7 @@
       46
     ],
     "description": "Wood, cork, straw, basketware",
-    "codeCount": 140,
+    "codeCount": 297,
     "dutiableCount": 60,
     "totalImports": 4562507689,
     "surtaxAffected": 0,
@@ -302,7 +302,7 @@
       49
     ],
     "description": "Wood pulp, paper, books, printed products",
-    "codeCount": 96,
+    "codeCount": 223,
     "dutiableCount": 0,
     "totalImports": 13010859666,
     "surtaxAffected": 0,
@@ -355,7 +355,7 @@
       63
     ],
     "description": "Fibres, fabrics, garments, carpets",
-    "codeCount": 833,
+    "codeCount": 1032,
     "dutiableCount": 301,
     "totalImports": 23033420400,
     "surtaxAffected": 0,
@@ -398,7 +398,7 @@
       67
     ],
     "description": "Footwear, hats, umbrellas, feathers",
-    "codeCount": 86,
+    "codeCount": 116,
     "dutiableCount": 57,
     "totalImports": 4893141627,
     "surtaxAffected": 0,
@@ -440,7 +440,7 @@
       70
     ],
     "description": "Stone, plaster, cement, ceramics, glass products",
-    "codeCount": 150,
+    "codeCount": 238,
     "dutiableCount": 59,
     "totalImports": 8288749149,
     "surtaxAffected": 0,
@@ -480,7 +480,7 @@
       71
     ],
     "description": "Natural pearls, precious stones, metals, jewellery",
-    "codeCount": 35,
+    "codeCount": 119,
     "dutiableCount": 4,
     "totalImports": 36515194373,
     "surtaxAffected": 0,
@@ -530,10 +530,10 @@
       83
     ],
     "description": "Iron, steel, copper, aluminium, tools, cutlery",
-    "codeCount": 471,
+    "codeCount": 1494,
     "dutiableCount": 110,
     "totalImports": 49707363189,
-    "surtaxAffected": 156,
+    "surtaxAffected": 1047,
     "topSources": [
       {
         "k": "US",
@@ -571,7 +571,7 @@
       85
     ],
     "description": "Mechanical appliances, motors, computers, electronics",
-    "codeCount": 766,
+    "codeCount": 1723,
     "dutiableCount": 89,
     "totalImports": 194969952497,
     "surtaxAffected": 0,
@@ -614,10 +614,10 @@
       89
     ],
     "description": "Railway, vehicles, aircraft, ships and boats",
-    "codeCount": 224,
+    "codeCount": 426,
     "dutiableCount": 121,
     "totalImports": 139268416934,
-    "surtaxAffected": 8,
+    "surtaxAffected": 59,
     "topSources": [
       {
         "k": "US",
@@ -656,7 +656,7 @@
       92
     ],
     "description": "Medical, optical, photographic instruments, watches",
-    "codeCount": 229,
+    "codeCount": 351,
     "dutiableCount": 68,
     "totalImports": 23959952128,
     "surtaxAffected": 0,
@@ -696,7 +696,7 @@
       93
     ],
     "description": "Weapons, ammunition, and accessories",
-    "codeCount": 16,
+    "codeCount": 79,
     "dutiableCount": 11,
     "totalImports": 594294925,
     "surtaxAffected": 0,
@@ -738,7 +738,7 @@
       96
     ],
     "description": "Furniture, lighting, toys, games, misc. manufactures",
-    "codeCount": 173,
+    "codeCount": 341,
     "dutiableCount": 100,
     "totalImports": 24066980269,
     "surtaxAffected": 0,
