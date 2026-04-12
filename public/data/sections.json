@@ -87,23 +87,23 @@
     "description": "Salt, sulphur, ores, mineral fuels, oils",
     "codeCount": 236,
     "dutiableCount": 6,
-    "totalImports": 54691117017,
+    "totalImports": 54856830080,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 41607228066
+        "v": 41755687624
       },
       {
         "k": "NG",
         "n": "NG",
-        "v": 2168206447
+        "v": 2175459985
       },
       {
         "k": "SA",
         "n": "SA",
-        "v": 2037370000
+        "v": 2044185838
       },
       {
         "k": "NL",
@@ -113,7 +113,7 @@
       {
         "k": "EC",
         "n": "EC",
-        "v": 586535380
+        "v": 587707018
       }
     ]
   },
@@ -137,33 +137,33 @@
     "description": "Chemicals, pharmaceuticals, fertilizers, dyes, soaps",
     "codeCount": 1307,
     "dutiableCount": 106,
-    "totalImports": 75960186624,
+    "totalImports": 76304185717,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 36140603327
+        "v": 36364408217
       },
       {
         "k": "CN",
         "n": "CN",
-        "v": 3261214516
+        "v": 3327916691
       },
       {
         "k": "DE",
         "n": "DE",
-        "v": 2860099545
+        "v": 2868493499
       },
       {
         "k": "BR",
         "n": "BR",
-        "v": 2360003649
+        "v": 2372374025
       },
       {
         "k": "CH",
         "n": "CH",
-        "v": 2258533632
+        "v": 2284967818
       }
     ]
   },
@@ -220,13 +220,13 @@
     "description": "Raw hides, leather goods, travel goods, furskins",
     "codeCount": 115,
     "dutiableCount": 22,
-    "totalImports": 2901582440,
+    "totalImports": 2901893261,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "CN",
         "n": "CN",
-        "v": 1019670577
+        "v": 1019789306
       },
       {
         "k": "VN",
@@ -236,7 +236,7 @@
       {
         "k": "IT",
         "n": "IT",
-        "v": 256349590
+        "v": 256472001
       },
       {
         "k": "KH",
@@ -262,18 +262,18 @@
     "description": "Wood, cork, straw, basketware",
     "codeCount": 297,
     "dutiableCount": 60,
-    "totalImports": 4562507689,
+    "totalImports": 4599665833,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 2542291457
+        "v": 2568557369
       },
       {
         "k": "CN",
         "n": "CN",
-        "v": 1029159720
+        "v": 1039502394
       },
       {
         "k": "VN",
@@ -283,7 +283,7 @@
       {
         "k": "TR",
         "n": "TR",
-        "v": 53079153
+        "v": 53628699
       },
       {
         "k": "CA",
@@ -304,28 +304,28 @@
     "description": "Wood pulp, paper, books, printed products",
     "codeCount": 223,
     "dutiableCount": 0,
-    "totalImports": 13010859666,
+    "totalImports": 13075760024,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 9157631428
+        "v": 9206386442
       },
       {
         "k": "CN",
         "n": "CN",
-        "v": 1406590063
+        "v": 1418505365
       },
       {
         "k": "BR",
         "n": "BR",
-        "v": 264561225
+        "v": 265536244
       },
       {
         "k": "FR",
         "n": "FR",
-        "v": 173981447
+        "v": 177005705
       },
       {
         "k": "MX",
@@ -357,13 +357,13 @@
     "description": "Fibres, fabrics, garments, carpets",
     "codeCount": 1032,
     "dutiableCount": 301,
-    "totalImports": 23033420400,
+    "totalImports": 23036222712,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "CN",
         "n": "CN",
-        "v": 6124907937
+        "v": 6125857393
       },
       {
         "k": "VN",
@@ -373,7 +373,7 @@
       {
         "k": "US",
         "n": "US",
-        "v": 2356019845
+        "v": 2357010885
       },
       {
         "k": "BD",
@@ -482,23 +482,23 @@
     "description": "Natural pearls, precious stones, metals, jewellery",
     "codeCount": 119,
     "dutiableCount": 4,
-    "totalImports": 36515194373,
+    "totalImports": 36701353923,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 6786957949
+        "v": 6861876299
       },
       {
         "k": "PE",
         "n": "PE",
-        "v": 5777640948
+        "v": 5841417873
       },
       {
         "k": "BR",
         "n": "BR",
-        "v": 4299849942
+        "v": 4347314167
       },
       {
         "k": "CH",
@@ -532,18 +532,18 @@
     "description": "Iron, steel, copper, aluminium, tools, cutlery",
     "codeCount": 1494,
     "dutiableCount": 110,
-    "totalImports": 49707363189,
+    "totalImports": 50425787269,
     "surtaxAffected": 1047,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 21759530403
+        "v": 22186273413
       },
       {
         "k": "CN",
         "n": "CN",
-        "v": 8247161918
+        "v": 8482077336
       },
       {
         "k": "SE",
@@ -553,12 +553,12 @@
       {
         "k": "KR",
         "n": "KR",
-        "v": 1128632192
+        "v": 1137408200
       },
       {
         "k": "MX",
         "n": "MX",
-        "v": 1053972239
+        "v": 1096276885
       }
     ]
   },
@@ -573,23 +573,23 @@
     "description": "Mechanical appliances, motors, computers, electronics",
     "codeCount": 1723,
     "dutiableCount": 89,
-    "totalImports": 194969952497,
+    "totalImports": 195076443025,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 73478161354
+        "v": 73554358138
       },
       {
         "k": "CN",
         "n": "CN",
-        "v": 34364907705
+        "v": 34385198133
       },
       {
         "k": "MX",
         "n": "MX",
-        "v": 12908255627
+        "v": 12918258935
       },
       {
         "k": "VN",
@@ -616,23 +616,23 @@
     "description": "Railway, vehicles, aircraft, ships and boats",
     "codeCount": 426,
     "dutiableCount": 121,
-    "totalImports": 139268416934,
+    "totalImports": 139576467796,
     "surtaxAffected": 59,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 72300443023
+        "v": 72508132110
       },
       {
         "k": "MX",
         "n": "MX",
-        "v": 21110832958
+        "v": 21170467253
       },
       {
         "k": "JP",
         "n": "JP",
-        "v": 8976435879
+        "v": 9003371676
       },
       {
         "k": "KR",
@@ -658,7 +658,7 @@
     "description": "Medical, optical, photographic instruments, watches",
     "codeCount": 351,
     "dutiableCount": 68,
-    "totalImports": 23959952128,
+    "totalImports": 23961672148,
     "surtaxAffected": 0,
     "topSources": [
       {
@@ -674,7 +674,7 @@
       {
         "k": "CN",
         "n": "CN",
-        "v": 1642695651
+        "v": 1642857147
       },
       {
         "k": "DE",
@@ -684,7 +684,7 @@
       {
         "k": "CH",
         "n": "CH",
-        "v": 956353582
+        "v": 957793578
       }
     ]
   },
@@ -698,23 +698,23 @@
     "description": "Weapons, ammunition, and accessories",
     "codeCount": 79,
     "dutiableCount": 11,
-    "totalImports": 594294925,
+    "totalImports": 596085551,
     "surtaxAffected": 0,
     "topSources": [
       {
         "k": "US",
         "n": "US",
-        "v": 340321797
+        "v": 341825090
       },
       {
         "k": "TR",
         "n": "TR",
-        "v": 41149794
+        "v": 41331563
       },
       {
         "k": "IT",
         "n": "IT",
-        "v": 23897838
+        "v": 24003401
       },
       {
         "k": "CN",
