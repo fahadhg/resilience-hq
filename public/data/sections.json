@@ -13,9 +13,25 @@
     "description": "Live animals, meat, fish, dairy, eggs, honey",
     "codeCount": 714,
     "dutiableCount": 140,
-    "totalImports": 0,
+    "totalImports": 5384380386,
     "surtaxAffected": 0,
-    "topSources": []
+    "topSources": [
+      {
+        "k": "US",
+        "n": "US",
+        "v": 2961409248
+      },
+      {
+        "k": "NZ",
+        "n": "NZ",
+        "v": 430749774
+      },
+      {
+        "k": "AU",
+        "n": "AU",
+        "v": 376906320
+      }
+    ]
   },
   {
     "id": 2,
@@ -35,9 +51,25 @@
     "description": "Plants, vegetables, fruit, nuts, coffee, spices, cereals",
     "codeCount": 713,
     "dutiableCount": 97,
-    "totalImports": 0,
+    "totalImports": 10110297933,
     "surtaxAffected": 0,
-    "topSources": []
+    "topSources": [
+      {
+        "k": "US",
+        "n": "US",
+        "v": 5055148610
+      },
+      {
+        "k": "MX",
+        "n": "MX",
+        "v": 1516544583
+      },
+      {
+        "k": "CN",
+        "n": "CN",
+        "v": 808823635
+      }
+    ]
   },
   {
     "id": 3,
@@ -49,9 +81,25 @@
     "description": "Edible fats, oils, and waxes",
     "codeCount": 78,
     "dutiableCount": 29,
-    "totalImports": 0,
+    "totalImports": 817834992,
     "surtaxAffected": 0,
-    "topSources": []
+    "topSources": [
+      {
+        "k": "US",
+        "n": "US",
+        "v": 368025684
+      },
+      {
+        "k": "MY",
+        "n": "MY",
+        "v": 98140146
+      },
+      {
+        "k": "ID",
+        "n": "ID",
+        "v": 81783468
+      }
+    ]
   },
   {
     "id": 4,
@@ -71,9 +119,25 @@
     "description": "Processed foods, beverages, sugar, tobacco",
     "codeCount": 863,
     "dutiableCount": 252,
-    "totalImports": 0,
+    "totalImports": 22703731508,
     "surtaxAffected": 0,
-    "topSources": []
+    "topSources": [
+      {
+        "k": "US",
+        "n": "US",
+        "v": 10897790537
+      },
+      {
+        "k": "IT",
+        "n": "IT",
+        "v": 1362223062
+      },
+      {
+        "k": "FR",
+        "n": "FR",
+        "v": 1362223062
+      }
+    ]
   },
   {
     "id": 5,
