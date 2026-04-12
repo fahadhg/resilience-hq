@@ -38,6 +38,15 @@ export default function Nav() {
           >
             Toolkit
           </Link>
+          <Link
+            href="/intel"
+            className={clsx(
+              'px-3 py-1.5 rounded text-xs transition-colors',
+              pathname?.startsWith('/intel') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink'
+            )}
+          >
+            Intel
+          </Link>
           <a
             href="https://www.ngen.ca"
             target="_blank"

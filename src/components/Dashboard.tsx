@@ -10,7 +10,7 @@ import {
   GAZETTE_ALERTS, getHS6, getBestFTA, fmtVal, findSurtax
 } from '@/lib/data';
 import {
-  assessRisk, parseBOM, estimateDrawback, runWhatIf, analyzeFTAGap,
+  assessRisk, parseBOM, estimateDrawback, runWhatIf,
   type BOMItem, type RiskAssessment, type WhatIfResult, type FTAGapItem
 } from '@/lib/analysis';
 import { type ROORule } from '@/lib/roo';
@@ -194,10 +194,6 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
     return { items: all.sort((a,b) => (b.risk?.score||0)-(a.risk?.score||0)), counts };
   }, [wlItems, getImp]);
 
-  // FTA gap analysis
-  const ftaGap = useMemo(() => analyzeFTAGap(D, IMP), [D, IMP]);
-  const totalWaste = ftaGap.reduce((s,r) => s+r.annualWaste, 0);
-
   // Drawback estimate
   const drawback = useMemo(() => estimateDrawback(dbImportHS, dbExportHS, dbValue, D, USR), [dbImportHS, dbExportHS, dbValue, D, USR]);
 
@@ -251,7 +247,6 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
     { id: 'supply', label: 'Supply chain', group: 'tools' },
     { id: 'whatif', label: 'What-if', group: 'tools' },
     { id: 'risk', label: 'Risk map', group: 'tools' },
-    { id: 'ftagap', label: 'FTA gap', group: 'intel' },
     { id: 'classify', label: 'AI classify', group: 'intel' },
     { id: 'drawback', label: 'Drawback', group: 'intel' },
     { id: 'alerts', label: 'Alerts', group: 'main' },
@@ -288,7 +283,6 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
             )}>
             {t.label}
             {t.id==='alerts'&&affectedWatch.length>0&&<span className="ml-1 text-[9px] bg-negative/20 text-negative px-1 py-0.5 rounded-full">{affectedWatch.length}</span>}
-            {t.id==='ftagap'&&<span className="ml-1 text-[9px] bg-warn/20 text-warn px-1 py-0.5 rounded-full">{fmtVal(totalWaste)}</span>}
           </button>
         ))}
       </div>
@@ -507,32 +501,6 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
           </div>
           {r.risk!.factors.length>0&&<div className="mt-1.5 text-[11px] text-ink-faint">{r.risk!.factors.join(' · ')}</div>}
         </div>))}</div>
-      </div>)}
-
-      {/* ══════════ FTA GAP ══════════ */}
-      {tab==='ftagap'&&(<div className="animate-fade-in">
-        <h2 className="font-display text-base font-medium mb-1">FTA savings left on the table</h2>
-        <p className="text-xs text-ink-muted mb-4">Codes where Canada imports from non-FTA origins despite preferential rates being available</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-          <Metric label="Total annual waste" value={fmtVal(totalWaste)} accent="#ef4444" sub="Duties that could be avoided" large/>
-          <Metric label="Codes affected" value={String(ftaGap.length)} sub="With >$100K avoidable duty"/>
-          <Metric label="Top waste chapter" value={ftaGap[0]?`Ch ${ftaGap[0].chapter}`:'-'} sub={ftaGap[0]?CHAPTER_NAMES[ftaGap[0].chapter]:''}/>
-        </div>
-        <div className="overflow-x-auto"><table className="w-full text-xs border-collapse">
-          <thead><tr className="border-b border-border">{['HS','Description','MFN','Best FTA','Non-FTA source','Annual waste','ROO qualification'].map(h=><th key={h} className="py-2 px-2 font-medium text-ink-faint text-[10px] uppercase tracking-wider text-left">{h}</th>)}</tr></thead>
-          <tbody>{ftaGap.slice(0,30).map(r=>(<tr key={r.hsCode} className="border-b border-border">
-            <td className="py-1.5 px-2 font-mono text-accent">{r.hsCode.slice(0,7)}</td>
-            <td className="py-1.5 px-2 text-ink-muted truncate max-w-[200px]">{r.description}</td>
-            <td className="py-1.5 px-2 font-mono text-warn">{r.mfnRate}%</td>
-            <td className="py-1.5 px-2 text-positive">{r.bestFTA} {r.bestFTARate===0?'Free':r.bestFTARate+'%'}</td>
-            <td className="py-1.5 px-2 text-negative">{r.topNonFTASource} ({fmtVal(r.nonFTAValue)})</td>
-            <td className="py-1.5 px-2 font-mono text-negative font-medium">{fmtVal(r.annualWaste)}</td>
-            <td className="py-1.5 px-2">{r.roo?<div>
-              <span className={clsx('text-[10px] font-medium px-1.5 py-0.5 rounded',r.qualificationRisk==='likely'?'bg-positive/10 text-positive':r.qualificationRisk==='complex'?'bg-negative/10 text-negative':'bg-warn/10 text-warn')}>{r.qualificationRisk==='likely'?'Likely qualifies':r.qualificationRisk==='complex'?'Complex rule':'Needs verification'}</span>
-              <div className="text-[10px] text-ink-faint mt-0.5">{r.roo.cusma}</div>
-            </div>:'—'}</td>
-          </tr>))}</tbody>
-        </table></div>
       </div>)}
 
       {/* ══════════ AI CLASSIFY ══════════ */}
