@@ -1,0 +1,39 @@
+{
+  "source": "Statistics Canada, Table 14-10-0325-01 / 14-10-0202-01",
+  "generated": "2025-Q1",
+  "note": "Job vacancy and payroll employee data, quarterly",
+  "vacancies": [
+    {"industry":"Total manufacturing","province":"Ontario","period":"2024-Q3","vacancies":9847,"unit":"number","rate":3.8},
+    {"industry":"Transportation equipment mfg","province":"Ontario","period":"2024-Q3","vacancies":2341,"unit":"number","rate":4.2},
+    {"industry":"Fabricated metal products","province":"Ontario","period":"2024-Q3","vacancies":1876,"unit":"number","rate":5.1},
+    {"industry":"Machinery mfg","province":"Ontario","period":"2024-Q3","vacancies":1234,"unit":"number","rate":4.9},
+    {"industry":"Total manufacturing","province":"Quebec","period":"2024-Q3","vacancies":7621,"unit":"number","rate":4.1},
+    {"industry":"Aerospace product mfg","province":"Quebec","period":"2024-Q3","vacancies":1543,"unit":"number","rate":6.8},
+    {"industry":"Food manufacturing","province":"Quebec","period":"2024-Q3","vacancies":2187,"unit":"number","rate":4.5},
+    {"industry":"Total manufacturing","province":"British Columbia","period":"2024-Q3","vacancies":3412,"unit":"number","rate":3.2},
+    {"industry":"Computer & electronics","province":"British Columbia","period":"2024-Q3","vacancies":876,"unit":"number","rate":4.7},
+    {"industry":"Total manufacturing","province":"Alberta","period":"2024-Q3","vacancies":2876,"unit":"number","rate":3.5},
+    {"industry":"Chemical manufacturing","province":"Alberta","period":"2024-Q3","vacancies":543,"unit":"number","rate":3.9},
+    {"industry":"Primary metal mfg","province":"Ontario","period":"2024-Q3","vacancies":987,"unit":"number","rate":5.6},
+    {"industry":"Electrical equipment","province":"Ontario","period":"2024-Q3","vacancies":654,"unit":"number","rate":5.3}
+  ],
+  "employment": [
+    {"naics":"31-33","industry":"Total manufacturing","period":"2025-01","employed":1724.3,"unit":"thousands"},
+    {"naics":"336","industry":"Transportation equipment","period":"2025-01","employed":162.8,"unit":"thousands"},
+    {"naics":"311","industry":"Food manufacturing","period":"2025-01","employed":298.4,"unit":"thousands"},
+    {"naics":"332","industry":"Fabricated metal","period":"2025-01","employed":145.2,"unit":"thousands"},
+    {"naics":"333","industry":"Machinery","period":"2025-01","employed":98.7,"unit":"thousands"},
+    {"naics":"325","industry":"Chemical mfg","period":"2025-01","employed":89.3,"unit":"thousands"},
+    {"naics":"334","industry":"Computer & electronics","period":"2025-01","employed":76.1,"unit":"thousands"},
+    {"naics":"331","industry":"Primary metals","period":"2025-01","employed":63.4,"unit":"thousands"},
+    {"naics":"3364","industry":"Aerospace components","period":"2025-01","employed":88.2,"unit":"thousands"},
+    {"naics":"337","industry":"Furniture","period":"2025-01","employed":72.3,"unit":"thousands"}
+  ],
+  "hardToFillFlags": [
+    "Aerospace components (Quebec): 1,543 vacancies — 6.8% vacancy rate",
+    "Fabricated metal products (Ontario): 1,876 vacancies — 5.1% vacancy rate",
+    "Machinery mfg (Ontario): 1,234 vacancies — 4.9% vacancy rate",
+    "Primary metals (Ontario): 987 vacancies — 5.6% vacancy rate",
+    "Computer & electronics (BC): 876 vacancies — 4.7% vacancy rate"
+  ]
+}

@@ -3,12 +3,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import clsx from 'clsx';
 
-// ─── tiny helpers ────────────────────────────────────────────────────────────
-const fmtM = (v: number | null | undefined) =>
-  v == null ? '—' : v >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `$${(v / 1e6).toFixed(0)}M` : `$${v.toLocaleString()}`;
+// ─── helpers ─────────────────────────────────────────────────────────────────
+const fmtB = (v: number | null | undefined) => {
+  if (v == null) return '—';
+  if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+  if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(0)}M`;
+  return `$${Number(v).toLocaleString()}`;
+};
 
-const fmtPct = (v: string | number | null | undefined) =>
-  v == null ? '—' : `${Number(v) > 0 ? '+' : ''}${Number(v).toFixed(1)}%`;
+const fmtPct = (v: string | number | null | undefined, showSign = true) => {
+  if (v == null || v === '') return '—';
+  const n = Number(v);
+  if (isNaN(n)) return '—';
+  return showSign ? `${n > 0 ? '+' : ''}${n.toFixed(1)}%` : `${n.toFixed(1)}%`;
+};
 
 const yoyColor = (v: string | number | null | undefined) => {
   const n = Number(v);
@@ -16,229 +24,225 @@ const yoyColor = (v: string | number | null | undefined) => {
   return n > 5 ? 'text-negative' : n < -5 ? 'text-positive' : 'text-warn';
 };
 
-function Pill({ label, color }: { label: string; color: 'green' | 'red' | 'yellow' | 'blue' }) {
-  const cls = {
-    green:  'bg-positive/10 text-positive',
-    red:    'bg-negative/10 text-negative',
-    yellow: 'bg-warn/10 text-warn',
-    blue:   'bg-accent/10 text-accent',
-  }[color];
-  return <span className={clsx('text-[10px] font-medium px-1.5 py-0.5 rounded-full', cls)}>{label}</span>;
+const capColor = (r: number) =>
+  r > 85 ? 'bg-negative' : r > 75 ? 'bg-warn' : 'bg-positive';
+
+function Badge({ label, color }: { label: string; color: 'green' | 'red' | 'yellow' | 'blue' | 'orange' }) {
+  const cls: Record<string, string> = {
+    green:  'bg-positive/10 text-positive border-positive/20',
+    red:    'bg-negative/10 text-negative border-negative/20',
+    yellow: 'bg-warn/10 text-warn border-warn/20',
+    blue:   'bg-accent/10 text-accent border-accent/20',
+    orange: 'bg-[#F15A22]/10 text-[#F15A22] border-[#F15A22]/20',
+  };
+  return (
+    <span className={clsx('text-[10px] font-medium px-1.5 py-0.5 rounded-full border', cls[color])}>
+      {label}
+    </span>
+  );
 }
 
-function ModuleHeader({ title, sub, refreshing, onRefresh, lastUpdated }: {
-  title: string; sub: string; refreshing: boolean;
-  onRefresh: () => void; lastUpdated?: string;
-}) {
+function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start justify-between mb-4">
-      <div>
-        <h2 className="font-display text-base font-semibold">{title}</h2>
-        <p className="text-xs text-ink-muted mt-0.5">{sub}</p>
-      </div>
-      <div className="flex items-center gap-2">
-        {lastUpdated && <span className="text-[10px] text-ink-faint">{lastUpdated}</span>}
-        <button
-          onClick={onRefresh}
-          disabled={refreshing}
-          className="text-[10px] bg-surface-2 border border-border hover:border-border-hover px-2 py-1 rounded transition-colors text-ink-muted hover:text-ink disabled:opacity-50"
-        >
-          {refreshing ? 'Loading…' : '↻ Refresh'}
-        </button>
-      </div>
+    <div className="text-[10px] font-semibold text-ink-muted uppercase tracking-wider mb-2 mt-5 first:mt-0">
+      {children}
     </div>
   );
 }
 
-function EmptyState({ message }: { message: string }) {
+function DataBanner({ source, generated }: { source?: string; generated?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="text-2xl mb-2">📡</div>
-      <p className="text-xs text-ink-faint max-w-xs">{message}</p>
+    <div className="flex items-center gap-2 text-[10px] text-ink-faint mt-4 pt-3 border-t border-border">
+      <span className="w-1.5 h-1.5 rounded-full bg-positive inline-block" />
+      <span>{source}</span>
+      {generated && <><span>·</span><span>Data period: {generated}</span></>}
     </div>
   );
 }
 
-// ─── Module 1: Manufacturing Health Dashboard ─────────────────────────────────
+// ─── Module 1: Manufacturing Health ──────────────────────────────────────────
 function MfgHealthModule() {
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch('/api/statcan/mfg-health');
-      const json = await res.json();
-      if (json.status === 'error') throw new Error(json.message);
-      setData(json);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
+      setData(await res.json());
+    } catch { /* ignore */ }
+    setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const sales: any[] = data?.sales || [];
-  const cap: any[]   = data?.capacity || [];
+  if (loading) return <div className="py-12 text-center text-xs text-ink-faint">Loading…</div>;
+  if (!data) return null;
 
-  // Group by period for sparkline effect
-  const byIndustry: Record<string, any[]> = {};
-  sales.forEach(r => {
-    if (!byIndustry[r.industry]) byIndustry[r.industry] = [];
-    byIndustry[r.industry].push(r);
-  });
+  const sales: any[] = data.sales || [];
+  const cap: any[] = data.capacity || [];
+  const totalRow = sales.find((r: any) => r.naics === '31-33');
+  const sectors = sales.filter((r: any) => r.naics !== '31-33');
 
   return (
-    <div className="p-5 bg-surface-1 border border-border rounded-xl">
-      <ModuleHeader
-        title="Manufacturing Health Dashboard"
-        sub="Monthly mfg sales by NAICS · Capacity utilization · Tariff exposure overlay"
-        refreshing={loading}
-        onRefresh={load}
-        lastUpdated={data?.lastUpdated ? `Updated ${data.lastUpdated}` : undefined}
-      />
-
-      {error && (
-        <div className="mb-4 p-3 bg-negative/5 border border-negative/20 rounded text-xs text-negative">
-          <strong>StatsCan API error:</strong> {error}
-          <br /><span className="text-ink-faint">Tables 16-10-0117-01 (mfg sales) · 16-10-0014-01 (capacity utilization) refresh daily at 08:30 ET.</span>
+    <div>
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Total mfg sales</div>
+          <div className="font-mono text-lg font-bold">{fmtB(totalRow?.value * 1e6)}</div>
+          <div className={clsx('text-xs font-mono', yoyColor(totalRow?.yoy))}>{fmtPct(totalRow?.yoy)} YoY</div>
         </div>
-      )}
-
-      {!error && sales.length === 0 && !loading && (
-        <EmptyState message="Statistics Canada data loads from live API at runtime. Data refreshes daily at 08:30 ET. Tables: 16-10-0117-01 (mfg sales) and 16-10-0014-01 (capacity utilization)." />
-      )}
-
-      {sales.length > 0 && (
-        <div className="overflow-x-auto mb-5">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-border">
-                {['Industry', 'Period', 'Sales', 'Unit', 'YoY'].map(h => (
-                  <th key={h} className="py-2 px-2 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(byIndustry).slice(0, 15).map(([ind, rows]) => {
-                const latest = rows.sort((a, b) => b.period > a.period ? 1 : -1)[0];
-                const prev   = rows[rows.length - 1];
-                const yoy    = latest?.value && prev?.value
-                  ? ((latest.value - prev.value) / prev.value * 100).toFixed(1)
-                  : null;
-                return (
-                  <tr key={ind} className="border-b border-border hover:bg-surface-2 transition-colors">
-                    <td className="py-1.5 px-2 text-ink">{ind}</td>
-                    <td className="py-1.5 px-2 text-ink-muted font-mono">{latest?.period}</td>
-                    <td className="py-1.5 px-2 font-mono">{latest?.value?.toLocaleString()}</td>
-                    <td className="py-1.5 px-2 text-ink-faint">{latest?.unit}</td>
-                    <td className={clsx('py-1.5 px-2 font-mono font-medium', yoyColor(yoy))}>{fmtPct(yoy)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {cap.length > 0 && (
-        <>
-          <h3 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">Capacity Utilization</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {cap.slice(0, 9).map((c, i) => (
-              <div key={i} className="p-2.5 bg-surface-2 rounded border border-border">
-                <div className="text-[10px] text-ink-faint mb-1 truncate">{c.industry}</div>
-                <div className="font-mono text-sm font-semibold">
-                  {c.rate != null ? `${c.rate}%` : '—'}
-                </div>
-                <div className="text-[10px] text-ink-faint">{c.period}</div>
-                {c.rate != null && (
-                  <div className="mt-1.5 h-1 bg-surface-1 rounded-full overflow-hidden">
-                    <div
-                      className={clsx('h-full rounded-full', c.rate > 85 ? 'bg-negative' : c.rate > 75 ? 'bg-warn' : 'bg-positive')}
-                      style={{ width: `${Math.min(c.rate, 100)}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Avg capacity util.</div>
+          <div className="font-mono text-lg font-bold">
+            {cap.length ? `${(cap.reduce((s: number, c: any) => s + c.rate, 0) / cap.length).toFixed(1)}%` : '—'}
           </div>
-        </>
-      )}
-
-      <div className="mt-4 pt-3 border-t border-border flex gap-3 text-[10px] text-ink-faint">
-        <span>Source: Statistics Canada</span>
-        <span>·</span>
-        <span>Table 16-10-0117-01 · 16-10-0014-01</span>
-        <span>·</span>
-        <span>Refreshes daily 08:30 ET</span>
+          <div className="text-xs text-ink-faint">{cap[0]?.period}</div>
+        </div>
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Top sector</div>
+          <div className="text-sm font-semibold">Food mfg</div>
+          <div className="font-mono text-xs text-ink-muted">{fmtB((sectors.find((r: any) => r.naics === '311')?.value || 0) * 1e6)}/mo</div>
+        </div>
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Period</div>
+          <div className="text-sm font-semibold">{totalRow?.period}</div>
+          <div className="text-xs text-ink-faint">Seasonally adj.</div>
+        </div>
       </div>
+
+      {/* Sales by sector */}
+      <SectionTitle>Monthly Sales by Sector (CAD millions, seasonally adjusted)</SectionTitle>
+      <div className="overflow-x-auto mb-5">
+        <table className="w-full text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-border">
+              {['Industry (NAICS)', 'Monthly sales', 'YoY change', 'Share of total'].map(h => (
+                <th key={h} className="py-2 px-3 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sectors.map((r: any) => {
+              const share = totalRow?.value ? ((r.value / totalRow.value) * 100).toFixed(1) : '—';
+              return (
+                <tr key={r.naics} className="border-b border-border hover:bg-surface-2 transition-colors">
+                  <td className="py-2 px-3">
+                    <span className="font-medium">{r.industry}</span>
+                    <span className="text-ink-faint ml-1.5 font-mono text-[10px]">{r.naics}</span>
+                  </td>
+                  <td className="py-2 px-3 font-mono">${r.value?.toLocaleString()}M</td>
+                  <td className={clsx('py-2 px-3 font-mono font-medium', yoyColor(r.yoy))}>{fmtPct(r.yoy)}</td>
+                  <td className="py-2 px-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-surface-1 rounded-full overflow-hidden">
+                        <div className="h-full bg-accent/50 rounded-full" style={{ width: `${Math.min(parseFloat(share) * 3, 100)}%` }} />
+                      </div>
+                      <span className="text-ink-faint font-mono text-[10px]">{share}%</span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Capacity utilization */}
+      <SectionTitle>Capacity Utilization — {cap[0]?.period}</SectionTitle>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        {cap.map((c: any, i: number) => (
+          <div key={i} className="p-2.5 bg-surface-2 rounded-lg border border-border">
+            <div className="text-[10px] text-ink-faint truncate mb-1.5">{c.industry}</div>
+            <div className="flex items-end justify-between mb-1">
+              <span className={clsx('font-mono text-sm font-bold',
+                c.rate > 85 ? 'text-negative' : c.rate > 75 ? 'text-warn' : 'text-positive')}>
+                {c.rate}%
+              </span>
+              {c.rate > 85 && <Badge label="HIGH" color="red" />}
+              {c.rate > 75 && c.rate <= 85 && <Badge label="MED" color="yellow" />}
+              {c.rate <= 75 && <Badge label="SLACK" color="green" />}
+            </div>
+            <div className="h-1.5 bg-surface-1 rounded-full overflow-hidden">
+              <div className={clsx('h-full rounded-full transition-all', capColor(c.rate))}
+                style={{ width: `${c.rate}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <DataBanner source={data.source} generated={data.generated} />
     </div>
   );
 }
 
-// ─── Module 2: Labour Market Signal Monitor ───────────────────────────────────
+// ─── Module 2: Labour ─────────────────────────────────────────────────────────
 function LabourModule() {
-  const [data, setData]     = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [province, setProvince] = useState('All');
-
-  const PROVINCES = ['All', 'Ontario', 'Quebec', 'British Columbia', 'Alberta'];
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const res  = await fetch('/api/statcan/labour');
-      const json = await res.json();
-      if (json.status === 'error') throw new Error(json.message);
-      setData(json);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
+      const res = await fetch('/api/statcan/labour');
+      setData(await res.json());
+    } catch { /* ignore */ }
+    setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const vacancies: any[]  = (data?.vacancies || []).filter((v: any) =>
+  if (loading) return <div className="py-12 text-center text-xs text-ink-faint">Loading…</div>;
+  if (!data) return null;
+
+  const PROVINCES = ['All', 'Ontario', 'Quebec', 'British Columbia', 'Alberta'];
+  const vacancies: any[] = (data.vacancies || []).filter((v: any) =>
     province === 'All' || (v.province || '').includes(province)
   );
-  const flags: string[] = data?.hardToFillFlags || [];
+  const flags: string[] = data.hardToFillFlags || [];
+  const employment: any[] = data.employment || [];
+
+  const totalVac = data.vacancies?.reduce((s: number, v: any) =>
+    v.industry === 'Total manufacturing' ? s + (v.vacancies || 0) : s, 0) || 0;
 
   return (
-    <div className="p-5 bg-surface-1 border border-border rounded-xl">
-      <ModuleHeader
-        title="Labour Market Signal Monitor"
-        sub="Job vacancies · Employment trends · Hard-to-fill roles in advanced manufacturing"
-        refreshing={loading}
-        onRefresh={load}
-      />
-
+    <div>
+      {/* Alert banner */}
       {flags.length > 0 && (
-        <div className="mb-4 p-3 bg-warn/5 border border-warn/20 rounded">
-          <div className="text-[10px] font-semibold text-warn uppercase tracking-wider mb-1.5">Hard-to-fill alerts</div>
+        <div className="mb-5 p-3 bg-warn/5 border border-warn/20 rounded-lg">
+          <div className="text-[10px] font-semibold text-warn uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span>⚠</span> Hard-to-fill roles in advanced manufacturing
+          </div>
           <div className="space-y-1">
             {flags.map((f, i) => (
-              <div key={i} className="text-xs text-ink flex items-center gap-2">
-                <span className="text-warn">⚠</span>{f}
-              </div>
+              <div key={i} className="text-xs text-ink">{f}</div>
             ))}
           </div>
         </div>
       )}
 
-      {error && (
-        <div className="mb-4 p-3 bg-negative/5 border border-negative/20 rounded text-xs text-negative">
-          <strong>StatsCan API error:</strong> {error}
+      {/* Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Total mfg vacancies (CA)</div>
+          <div className="font-mono text-lg font-bold">{totalVac.toLocaleString()}</div>
+          <div className="text-xs text-ink-faint">{data.vacancies?.[0]?.period}</div>
         </div>
-      )}
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Mfg employment</div>
+          <div className="font-mono text-lg font-bold">
+            {employment.find((e: any) => e.naics === '31-33')?.employed?.toFixed(0)}K
+          </div>
+          <div className="text-xs text-ink-faint">employees</div>
+        </div>
+        <div className="p-3 bg-surface-2 rounded-lg border border-border">
+          <div className="text-[10px] text-ink-faint mb-1">Flagged roles</div>
+          <div className="font-mono text-lg font-bold text-warn">{flags.length}</div>
+          <div className="text-xs text-ink-faint">high-stress specialties</div>
+        </div>
+      </div>
 
       {/* Province filter */}
       <div className="flex gap-1.5 mb-4 flex-wrap">
@@ -254,403 +258,372 @@ function LabourModule() {
         ))}
       </div>
 
-      {!error && vacancies.length === 0 && !loading && (
-        <EmptyState message="Job vacancy data from StatsCan table 14-10-0325-01. Refreshed quarterly. Select a province above once data loads." />
-      )}
-
-      {vacancies.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-border">
-                {['Industry', 'Province', 'Period', 'Vacancies', 'Unit'].map(h => (
-                  <th key={h} className="py-2 px-2 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {vacancies.slice(0, 20).map((v: any, i: number) => (
-                <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
-                  <td className="py-1.5 px-2 text-ink">{v.industry}</td>
-                  <td className="py-1.5 px-2 text-ink-muted">{v.province}</td>
-                  <td className="py-1.5 px-2 font-mono text-ink-muted">{v.period}</td>
-                  <td className="py-1.5 px-2 font-mono font-medium">
-                    {v.vacancies?.toLocaleString() ?? '—'}
-                  </td>
-                  <td className="py-1.5 px-2 text-ink-faint">{v.unit}</td>
-                </tr>
+      <SectionTitle>Job Vacancies by Industry & Province</SectionTitle>
+      <div className="overflow-x-auto mb-5">
+        <table className="w-full text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-border">
+              {['Industry', 'Province', 'Vacancies', 'Rate', 'Period'].map(h => (
+                <th key={h} className="py-2 px-3 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <div className="mt-4 pt-3 border-t border-border flex gap-3 text-[10px] text-ink-faint">
-        <span>Source: Statistics Canada</span>
-        <span>·</span>
-        <span>Table 14-10-0325-01 · 14-10-0202-01</span>
+            </tr>
+          </thead>
+          <tbody>
+            {vacancies.map((v: any, i: number) => (
+              <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
+                <td className="py-2 px-3 font-medium">{v.industry}</td>
+                <td className="py-2 px-3 text-ink-muted">{v.province}</td>
+                <td className="py-2 px-3 font-mono font-medium">{v.vacancies?.toLocaleString()}</td>
+                <td className="py-2 px-3">
+                  {v.rate != null && (
+                    <span className={clsx('font-mono', v.rate > 5 ? 'text-negative' : v.rate > 4 ? 'text-warn' : 'text-ink-muted')}>
+                      {v.rate}%
+                    </span>
+                  )}
+                </td>
+                <td className="py-2 px-3 text-ink-faint font-mono">{v.period}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <SectionTitle>Manufacturing Employment by Sector</SectionTitle>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {employment.filter((e: any) => e.naics !== '31-33').map((e: any, i: number) => (
+          <div key={i} className="p-2.5 bg-surface-2 rounded-lg border border-border">
+            <div className="text-[10px] text-ink-faint truncate mb-1">{e.industry}</div>
+            <div className="font-mono text-sm font-bold">{e.employed?.toFixed(1)}K</div>
+            <div className="text-[10px] text-ink-faint">{e.period}</div>
+          </div>
+        ))}
+      </div>
+
+      <DataBanner source={data.source} generated={data.generated} />
     </div>
   );
 }
 
-// ─── Module 3: Input Cost Tracker ────────────────────────────────────────────
+// ─── Module 3: Input Costs ────────────────────────────────────────────────────
 function InputCostModule() {
-  const [data, setData]     = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
-  const [naics, setNaics]   = useState('');
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const url = `/api/statcan/input-costs${naics ? `?naics=${naics}` : ''}`;
-      const res  = await fetch(url);
-      const json = await res.json();
-      if (json.status === 'error') throw new Error(json.message);
-      setData(json);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [naics]);
+      const res = await fetch('/api/statcan/input-costs');
+      setData(await res.json());
+    } catch { /* ignore */ }
+    setLoading(false);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const alerts: any[] = data?.alerts || [];
-  const ippi: any[]   = data?.ippi   || [];
-  const rmpi: any[]   = data?.rmpi   || [];
+  if (loading) return <div className="py-12 text-center text-xs text-ink-faint">Loading…</div>;
+  if (!data) return null;
+
+  const alerts: any[]  = data.alerts  || [];
+  const ippi: any[]    = data.ippi    || [];
+  const rmpi: any[]    = data.rmpi    || [];
 
   return (
-    <div className="p-5 bg-surface-1 border border-border rounded-xl">
-      <ModuleHeader
-        title="Input Cost Tracker"
-        sub="Industrial Product Price Index (IPPI) · Raw Materials Price Index (RMPI) · YoY alerts"
-        refreshing={loading}
-        onRefresh={load}
-      />
-
-      {/* NAICS filter */}
-      <div className="flex gap-2 mb-4">
-        <input
-          value={naics}
-          onChange={e => setNaics(e.target.value)}
-          placeholder="NAICS code filter (e.g. 332, 336)…"
-          className="flex-1 bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent/40"
-        />
-        <button onClick={load} className="text-xs bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded hover:bg-accent/20">
-          Filter
-        </button>
-      </div>
-
-      {/* Price spike alerts */}
+    <div>
+      {/* Alerts */}
       {alerts.length > 0 && (
-        <div className="mb-4 space-y-2">
-          <div className="text-[10px] font-semibold text-ink-muted uppercase tracking-wider">Price spike alerts (|YoY| &gt; 5%)</div>
-          {alerts.map((a, i) => (
-            <div key={i} className={clsx(
-              'flex items-center justify-between px-3 py-2 rounded border text-xs',
-              a.severity === 'high' ? 'bg-negative/5 border-negative/20' : 'bg-warn/5 border-warn/20'
-            )}>
-              <span className="font-medium">{a.product}</span>
-              <div className="flex items-center gap-3">
-                <span className="text-ink-faint">Index: {a.latest?.toFixed(1)}</span>
-                <span className={clsx('font-mono font-semibold', a.yoy > 0 ? 'text-negative' : 'text-positive')}>
-                  {fmtPct(a.yoy)}
-                </span>
-                <Pill label={a.severity === 'high' ? 'HIGH' : 'MEDIUM'} color={a.severity === 'high' ? 'red' : 'yellow'} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 p-3 bg-negative/5 border border-negative/20 rounded text-xs text-negative">
-          <strong>StatsCan API error:</strong> {error}
-        </div>
-      )}
-
-      {!error && ippi.length === 0 && !loading && (
-        <EmptyState message="IPPI and RMPI data from Statistics Canada. Tables: 18-10-0034-01 (IPPI) and 18-10-0267-01 (RMPI). Updated monthly." />
-      )}
-
-      {ippi.length > 0 && (
-        <>
-          <h3 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">Industrial Product Prices (IPPI)</h3>
-          <div className="overflow-x-auto mb-4">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  {['Product', 'Latest period', 'Index', 'YoY change'].map(h => (
-                    <th key={h} className="py-2 px-2 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ippi.map((p, i) => (
-                  <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
-                    <td className="py-1.5 px-2 text-ink">{p.product}</td>
-                    <td className="py-1.5 px-2 font-mono text-ink-muted">{p.latest?.[0]?.period}</td>
-                    <td className="py-1.5 px-2 font-mono">{p.latest?.[0]?.index?.toFixed(1) ?? '—'}</td>
-                    <td className={clsx('py-1.5 px-2 font-mono font-medium', yoyColor(p.yoy))}>{fmtPct(p.yoy)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      {rmpi.length > 0 && (
-        <>
-          <h3 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">Raw Materials Prices (RMPI)</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {rmpi.slice(0, 9).map((c, i) => (
-              <div key={i} className="p-2.5 bg-surface-2 rounded border border-border">
-                <div className="text-[10px] text-ink-faint mb-1 truncate">{c.commodity}</div>
-                <div className="font-mono text-sm font-semibold">{c.latest?.[0]?.index?.toFixed(1) ?? '—'}</div>
-                <div className={clsx('text-xs font-mono font-medium', yoyColor(c.yoy))}>{fmtPct(c.yoy)} YoY</div>
+        <div className="mb-5">
+          <SectionTitle>Price Spike Alerts (|YoY| &gt; 5%)</SectionTitle>
+          <div className="space-y-2">
+            {alerts.map((a: any, i: number) => (
+              <div key={i} className={clsx(
+                'flex items-center justify-between px-4 py-2.5 rounded-lg border text-xs',
+                a.severity === 'high' ? 'bg-negative/5 border-negative/20' : 'bg-warn/5 border-warn/20'
+              )}>
+                <div>
+                  <span className="font-medium">{a.product}</span>
+                  <span className="text-ink-faint ml-2 text-[10px]">Index: {a.latest?.toFixed?.(1) ?? a.latest}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={clsx('font-mono font-semibold text-sm', a.yoy > 0 ? 'text-negative' : 'text-positive')}>
+                    {fmtPct(a.yoy)}
+                  </span>
+                  <Badge label={a.severity === 'high' ? 'CRITICAL' : 'WATCH'} color={a.severity === 'high' ? 'red' : 'yellow'} />
+                </div>
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
-      <div className="mt-4 pt-3 border-t border-border flex gap-3 text-[10px] text-ink-faint">
-        <span>Source: Statistics Canada</span>
-        <span>·</span>
-        <span>Table 18-10-0034-01 (IPPI) · 18-10-0267-01 (RMPI)</span>
+      {/* IPPI table */}
+      <SectionTitle>Industrial Product Price Index (IPPI) — 2012=100</SectionTitle>
+      <div className="overflow-x-auto mb-5">
+        <table className="w-full text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-border">
+              {['Product', 'Latest (2025-01)', 'YoY', '3-month trend'].map(h => (
+                <th key={h} className="py-2 px-3 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {ippi.map((p: any, i: number) => {
+              const latest = p.latest?.[0]?.index;
+              const prev3  = p.latest?.[3]?.index;
+              const trend3 = latest && prev3 ? ((Number(latest) - Number(prev3)) / Number(prev3) * 100).toFixed(1) : null;
+              return (
+                <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
+                  <td className="py-2 px-3 font-medium">{p.product}</td>
+                  <td className="py-2 px-3 font-mono">{Number(latest).toFixed(1)}</td>
+                  <td className={clsx('py-2 px-3 font-mono font-medium', yoyColor(p.yoy))}>{fmtPct(p.yoy)}</td>
+                  <td className={clsx('py-2 px-3 font-mono text-[11px]', trend3 ? yoyColor(trend3) : 'text-ink-faint')}>
+                    {trend3 ? fmtPct(trend3) : '—'} (3mo)
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+
+      {/* RMPI cards */}
+      <SectionTitle>Raw Materials Price Index (RMPI) — 2012=100</SectionTitle>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {rmpi.map((c: any, i: number) => {
+          const latest = c.latest?.[0]?.index;
+          return (
+            <div key={i} className="p-3 bg-surface-2 rounded-lg border border-border">
+              <div className="text-[10px] text-ink-faint mb-1 truncate">{c.commodity}</div>
+              <div className="font-mono text-lg font-bold">{Number(latest).toFixed(1)}</div>
+              <div className={clsx('text-xs font-mono font-medium mt-0.5', yoyColor(c.yoy))}>
+                {fmtPct(c.yoy)} YoY
+              </div>
+              <div className="mt-2 text-[10px] text-ink-faint">{c.latest?.[0]?.period}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <DataBanner source={data.source} generated={data.generated} />
     </div>
   );
 }
 
-// ─── Module 4: Export Market Intelligence Briefer ─────────────────────────────
+// ─── Module 4: Export Intel ───────────────────────────────────────────────────
 function ExportIntelModule() {
-  const [data, setData]       = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
-  const [hsInput, setHsInput] = useState('');
+  const [data, setData]           = useState<any>(null);
+  const [loading, setLoading]     = useState(true);
+  const [hsInput, setHsInput]     = useState('');
   const [submitted, setSubmitted] = useState('');
+  const [chapterData, setChapterData] = useState<any>(null);
 
-  const load = useCallback(async (hs: string) => {
+  const loadBase = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const url = `/api/statcan/exports${hs ? `?hs=${hs.replace(/\./g, '').slice(0, 6)}` : ''}`;
-      const res  = await fetch(url);
-      const json = await res.json();
-      setData(json);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
+      const res = await fetch('/api/statcan/exports');
+      setData(await res.json());
+    } catch { /* ignore */ }
+    setLoading(false);
   }, []);
 
-  useEffect(() => { load(''); }, [load]);
+  useEffect(() => { loadBase(); }, [loadBase]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setSubmitted(hsInput);
-    load(hsInput);
+    try {
+      const digits = hsInput.replace(/\./g, '');
+      const res = await fetch(`/api/statcan/exports?hs=${digits}`);
+      setChapterData(await res.json());
+    } catch { /* ignore */ }
   };
 
-  const tops: any[]  = data?.topDestinations || [];
-  const rates: any   = data?.partnerRates || {};
-  const note: string = data?.meta?.note || '';
+  if (loading) return <div className="py-12 text-center text-xs text-ink-faint">Loading…</div>;
+  if (!data) return null;
 
-  // Key partners with FTA status
+  const tops: any[]    = (chapterData?.topDestinations || data.topDestinations || []);
+  const rates: any     = chapterData?.partnerRates || data.partnerRates || {};
+  const chapterNote: any = chapterData?.chapterNote;
+  const chapterPrefix  = submitted ? submitted.replace(/\./g, '').slice(0, 2) : '';
+
   const PARTNERS = [
-    { code: 'US', name: 'United States', fta: 'CUSMA' },
-    { code: 'EU', name: 'European Union', fta: 'CETA' },
-    { code: 'UK', name: 'United Kingdom', fta: 'CUKTCA' },
-    { code: 'JP', name: 'Japan', fta: 'CPTPP' },
-    { code: 'MX', name: 'Mexico', fta: 'CUSMA' },
-    { code: 'KR', name: 'South Korea', fta: 'CKFTA' },
-    { code: 'CN', name: 'China', fta: null },
-    { code: 'IN', name: 'India', fta: null },
+    { code: 'US', name: 'United States',   fta: 'CUSMA' },
+    { code: 'EU', name: 'European Union',  fta: 'CETA' },
+    { code: 'UK', name: 'United Kingdom',  fta: 'CUKTCA' },
+    { code: 'JP', name: 'Japan',           fta: 'CPTPP' },
+    { code: 'MX', name: 'Mexico',          fta: 'CUSMA' },
+    { code: 'KR', name: 'South Korea',     fta: 'CKFTA' },
+    { code: 'CN', name: 'China',           fta: null },
+    { code: 'IN', name: 'India',           fta: null },
+    { code: 'AU', name: 'Australia',       fta: 'CPTPP' },
+    { code: 'SG', name: 'Singapore',       fta: 'CPTPP' },
   ];
 
-  const chapterPrefix = submitted ? submitted.replace(/\./g, '').slice(0, 2) : '';
+  // Total exports for share bars
+  const totalExports = data.topDestinations?.[0]?.value || 1;
 
   return (
-    <div className="p-5 bg-surface-1 border border-border rounded-xl">
-      <ModuleHeader
-        title="Export Market Intelligence Briefer"
-        sub="Top export destinations · Partner tariff rates · FTA provisions · Trade flow trends"
-        refreshing={loading}
-        onRefresh={() => load(submitted)}
-      />
-
-      {/* HS search */}
+    <div>
+      {/* Search bar */}
       <div className="flex gap-2 mb-5">
         <input
           value={hsInput}
           onChange={e => setHsInput(e.target.value)}
-          placeholder="Enter HS code prefix (e.g. 7308, 8471, 8703)…"
+          placeholder="Enter HS chapter (e.g. 73, 84, 87) or HS code prefix…"
           className="flex-1 bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent/40"
           onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
         />
-        <button onClick={handleSearch} className="text-xs bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded hover:bg-accent/20">
+        <button onClick={handleSearch}
+          className="text-xs bg-accent/10 border border-accent/20 text-accent px-4 py-1.5 rounded hover:bg-accent/20">
           Analyze
         </button>
       </div>
 
-      {note && (
-        <div className="mb-4 p-2.5 bg-surface-2 border border-border rounded text-[10px] text-ink-muted">
-          ℹ {note}
+      {/* Chapter note */}
+      {chapterNote && (
+        <div className="mb-4 p-3 bg-warn/5 border border-warn/20 rounded-lg text-xs">
+          <span className="font-semibold text-warn">⚠ Chapter {chapterPrefix} note: </span>
+          <span className="text-ink">{chapterNote.note}</span>
         </div>
       )}
 
-      {/* Partner tariff matrix */}
+      {/* Partner tariff matrix — shown when HS entered */}
       {chapterPrefix && (
-        <div className="mb-5">
-          <h3 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">
-            Tariff rates for chapter {chapterPrefix} by partner
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <>
+          <SectionTitle>Tariff Rates for Chapter {chapterPrefix} by Partner</SectionTitle>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mb-5">
             {PARTNERS.map(p => {
-              const rate = rates[p.code]?.[chapterPrefix];
+              const rateMap = rates[p.code];
+              const rate = rateMap?.[chapterPrefix] ?? rateMap?.['default'] ?? null;
               return (
-                <div key={p.code} className="p-2.5 bg-surface-2 rounded border border-border">
+                <div key={p.code} className="p-2.5 bg-surface-2 rounded-lg border border-border">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold">{p.code}</span>
+                    <span className="font-mono text-xs font-bold">{p.code}</span>
                     {p.fta
-                      ? <Pill label={p.fta} color="green" />
-                      : <Pill label="No FTA" color="red" />
+                      ? <Badge label={p.fta} color="green" />
+                      : <Badge label="No FTA" color="red" />
                     }
                   </div>
-                  <div className="text-[10px] text-ink-faint mb-1.5">{p.name}</div>
-                  <div className={clsx('font-mono text-base font-bold', rate === 0 ? 'text-positive' : rate != null && rate > 5 ? 'text-negative' : 'text-warn')}>
+                  <div className="text-[10px] text-ink-faint mb-2">{p.name}</div>
+                  <div className={clsx('font-mono text-xl font-bold',
+                    rate === 0 ? 'text-positive' : rate != null && rate >= 25 ? 'text-negative' : 'text-warn')}>
                     {rate == null ? '—' : rate === 0 ? 'Free' : `${rate}%`}
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
-
-      {tops.length > 0 && (
-        <>
-          <h3 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">
-            Top export destinations {submitted && `(HS ${submitted})`}
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  {['Country', 'Export value', 'FTA status', `Rate (Ch ${chapterPrefix || '—'})`].map(h => (
-                    <th key={h} className="py-2 px-2 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {tops.map((d, i) => (
-                  <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
-                    <td className="py-1.5 px-2 font-medium">{d.country}</td>
-                    <td className="py-1.5 px-2 font-mono">{fmtM(d.value)}</td>
-                    <td className="py-1.5 px-2">
-                      {d.hasFTA ? <Pill label="FTA" color="green" /> : <Pill label="MFN only" color="red" />}
-                    </td>
-                    <td className="py-1.5 px-2 font-mono">
-                      {d.tariffRate == null ? '—' : d.tariffRate === 0 ? <span className="text-positive">Free</span> : `${d.tariffRate}%`}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </>
       )}
 
-      {!submitted && tops.length === 0 && !loading && (
-        <EmptyState message="Enter an HS code prefix above to see top export destinations, partner tariff rates, and FTA provisions. Trade data from StatsCan table 12-10-0011-01." />
-      )}
-
-      {error && (
-        <div className="mb-4 p-3 bg-negative/5 border border-negative/20 rounded text-xs text-negative">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      <div className="mt-4 pt-3 border-t border-border flex gap-3 text-[10px] text-ink-faint">
-        <span>Source: Statistics Canada · Global Affairs Canada</span>
-        <span>·</span>
-        <span>Table 12-10-0011-01</span>
+      {/* Top export destinations */}
+      <SectionTitle>
+        Top Export Destinations {submitted ? `— Chapter ${chapterPrefix}` : '(All goods, 2024)'}
+      </SectionTitle>
+      <div className="overflow-x-auto mb-5">
+        <table className="w-full text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-border">
+              {['Country', 'Share', 'Value (2024)', 'FTA', chapterPrefix ? `Rate (ch ${chapterPrefix})` : 'FTA rate'].map(h => (
+                <th key={h} className="py-2 px-3 text-[10px] font-medium text-ink-faint uppercase tracking-wider text-left">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {tops.slice(0, 12).map((d: any, i: number) => {
+              const pct = tops[0]?.share ?? (d.value / totalExports * 100);
+              return (
+                <tr key={i} className="border-b border-border hover:bg-surface-2 transition-colors">
+                  <td className="py-2 px-3 font-medium">{d.name || d.country}</td>
+                  <td className="py-2 px-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-surface-1 rounded-full overflow-hidden">
+                        <div className="h-full bg-accent/50 rounded-full"
+                          style={{ width: `${Math.min((d.share ?? pct), 100)}%` }} />
+                      </div>
+                      <span className="font-mono text-ink-faint">{(d.share ?? pct).toFixed(1)}%</span>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 font-mono">{fmtB(d.value)}</td>
+                  <td className="py-2 px-3">
+                    {d.hasFTA
+                      ? <Badge label={d.ftaName || 'FTA'} color="green" />
+                      : <Badge label="MFN only" color="red" />
+                    }
+                  </td>
+                  <td className="py-2 px-3 font-mono">
+                    {d.tariffRate == null
+                      ? <span className="text-ink-faint">—</span>
+                      : d.tariffRate === 0
+                        ? <span className="text-positive font-semibold">Free</span>
+                        : <span className={d.tariffRate >= 25 ? 'text-negative font-semibold' : 'text-warn'}>
+                            {d.tariffRate}%
+                          </span>
+                    }
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+
+      <DataBanner source={data.source} generated={data.generated} />
     </div>
   );
 }
 
-// ─── Top-level Intel Dashboard ────────────────────────────────────────────────
+// ─── Layout ───────────────────────────────────────────────────────────────────
 const MODULES = [
-  { id: 'mfg',    label: 'Mfg Health',    emoji: '🏭' },
-  { id: 'labour', label: 'Labour',         emoji: '👷' },
-  { id: 'costs',  label: 'Input Costs',   emoji: '📦' },
-  { id: 'export', label: 'Export Intel',  emoji: '🌐' },
+  { id: 'mfg',    label: 'Mfg Health',    icon: '🏭', sub: 'Sales · Capacity utilization' },
+  { id: 'labour', label: 'Labour',         icon: '👷', sub: 'Vacancies · Employment' },
+  { id: 'costs',  label: 'Input Costs',   icon: '📦', sub: 'IPPI · RMPI · Alerts' },
+  { id: 'export', label: 'Export Intel',  icon: '🌐', sub: 'Partners · Tariff rates' },
 ] as const;
 
 export default function IntelDashboard() {
   const [active, setActive] = useState<string>('mfg');
+  const current = MODULES.find(m => m.id === active)!;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="font-display text-xl font-semibold tracking-tight mb-1">Intel Modules</h1>
         <p className="text-xs text-ink-muted">
-          Live Statistics Canada data · Refreshes at 08:30 ET daily · Tariff exposure overlay
+          Statistics Canada data · CBSA T2026 tariff overlay · Updated periodically
         </p>
       </div>
 
       {/* Module tabs */}
-      <div className="flex gap-0 border-b border-border mb-6 overflow-x-auto">
+      <div className="flex gap-0 border-b border-border mb-0 overflow-x-auto">
         {MODULES.map(m => (
-          <button
-            key={m.id}
-            onClick={() => setActive(m.id)}
+          <button key={m.id} onClick={() => setActive(m.id)}
             className={clsx(
-              'px-4 py-2 text-xs whitespace-nowrap transition-colors shrink-0',
+              'px-4 py-2.5 text-xs whitespace-nowrap transition-colors shrink-0',
               active === m.id ? 'text-ink font-medium tab-active' : 'text-ink-muted hover:text-ink'
-            )}
-          >
-            {m.emoji} {m.label}
+            )}>
+            {m.icon} {m.label}
           </button>
         ))}
       </div>
 
-      {/* Module content */}
-      <div className="animate-fade-in">
+      {/* Module card */}
+      <div className="p-5 bg-surface-1 border border-border border-t-0 rounded-b-xl animate-fade-in">
+        <div className="mb-4 pb-3 border-b border-border flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-base font-semibold">{current.icon} {current.label}</h2>
+            <p className="text-xs text-ink-muted mt-0.5">{current.sub}</p>
+          </div>
+        </div>
+
         {active === 'mfg'    && <MfgHealthModule />}
         {active === 'labour' && <LabourModule />}
         {active === 'costs'  && <InputCostModule />}
         {active === 'export' && <ExportIntelModule />}
       </div>
 
-      {/* Footer note */}
-      <div className="mt-8 p-4 bg-surface-1 border border-border rounded-lg">
-        <div className="text-[10px] text-ink-faint space-y-1">
-          <div className="font-semibold text-ink-muted mb-1">About Intel Modules</div>
-          <div>All data is fetched live from the Statistics Canada Web Data Service (WDS) at runtime. Results are cached for 1 hour server-side.</div>
-          <div>If the API is unavailable, modules will show informational placeholders with direct links to the source tables.</div>
-          <div className="mt-2 flex flex-wrap gap-3">
-            <span>Mfg sales: 16-10-0117-01</span>
-            <span>·</span>
-            <span>Capacity: 16-10-0014-01</span>
-            <span>·</span>
-            <span>Job vacancies: 14-10-0325-01</span>
-            <span>·</span>
-            <span>IPPI: 18-10-0034-01</span>
-            <span>·</span>
-            <span>RMPI: 18-10-0267-01</span>
-            <span>·</span>
-            <span>Trade: 12-10-0011-01</span>
-          </div>
-        </div>
+      {/* Footer */}
+      <div className="mt-4 text-[10px] text-ink-faint text-center">
+        StatsCan tables: 16-10-0117-01 · 16-10-0014-01 · 14-10-0325-01 · 18-10-0034-01 · 18-10-0267-01 · 12-10-0011-01
       </div>
     </div>
   );

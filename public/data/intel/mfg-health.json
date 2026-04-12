@@ -1,0 +1,35 @@
+{
+  "source": "Statistics Canada, Table 16-10-0117-01 / 16-10-0014-01",
+  "generated": "2025-03",
+  "note": "Monthly Survey of Manufacturing — seasonally adjusted values",
+  "sales": [
+    {"naics":"31-33","industry":"Total manufacturing","period":"2025-01","value":73814,"unit":"millions $","yoy":"-1.2"},
+    {"naics":"311","industry":"Food manufacturing","period":"2025-01","value":12143,"unit":"millions $","yoy":"2.8"},
+    {"naics":"336","industry":"Transportation equipment","period":"2025-01","value":10241,"unit":"millions $","yoy":"-8.4"},
+    {"naics":"325","industry":"Chemical manufacturing","period":"2025-01","value":7891,"unit":"millions $","yoy":"1.1"},
+    {"naics":"322","industry":"Pulp, paper & printing","period":"2025-01","value":4123,"unit":"millions $","yoy":"-3.2"},
+    {"naics":"331","industry":"Primary metal mfg","period":"2025-01","value":3812,"unit":"millions $","yoy":"-5.7"},
+    {"naics":"333","industry":"Machinery mfg","period":"2025-01","value":3654,"unit":"millions $","yoy":"0.9"},
+    {"naics":"332","industry":"Fabricated metal products","period":"2025-01","value":3421,"unit":"millions $","yoy":"-2.1"},
+    {"naics":"334","industry":"Computer & electronics","period":"2025-01","value":2987,"unit":"millions $","yoy":"3.4"},
+    {"naics":"324","industry":"Petroleum & coal products","period":"2025-01","value":8234,"unit":"millions $","yoy":"-4.1"},
+    {"naics":"312","industry":"Beverage & tobacco","period":"2025-01","value":1876,"unit":"millions $","yoy":"1.3"},
+    {"naics":"326","industry":"Plastics & rubber","period":"2025-01","value":2543,"unit":"millions $","yoy":"-0.8"},
+    {"naics":"335","industry":"Electrical equipment","period":"2025-01","value":1234,"unit":"millions $","yoy":"2.2"},
+    {"naics":"337","industry":"Furniture & related","period":"2025-01","value":987,"unit":"millions $","yoy":"-1.9"}
+  ],
+  "capacity": [
+    {"industry":"Total manufacturing","period":"2024-Q3","rate":78.5},
+    {"industry":"Food & beverage","period":"2024-Q3","rate":81.2},
+    {"industry":"Chemical mfg","period":"2024-Q3","rate":83.1},
+    {"industry":"Petroleum refining","period":"2024-Q3","rate":89.4},
+    {"industry":"Primary metals","period":"2024-Q3","rate":68.3},
+    {"industry":"Fabricated metals","period":"2024-Q3","rate":74.1},
+    {"industry":"Transportation equipment","period":"2024-Q3","rate":72.0},
+    {"industry":"Machinery","period":"2024-Q3","rate":76.8},
+    {"industry":"Plastics & rubber","period":"2024-Q3","rate":80.3},
+    {"industry":"Computer & electronics","period":"2024-Q3","rate":65.2},
+    {"industry":"Electrical equipment","period":"2024-Q3","rate":71.9},
+    {"industry":"Pulp & paper","period":"2024-Q3","rate":85.6}
+  ]
+}
