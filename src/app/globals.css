@@ -1,37 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --surface-0: #0b0d10;
-  --surface-1: #12151a;
-  --surface-2: #1a1e25;
-  --surface-3: #242930;
-  --ink: #e8eaed;
-  --ink-muted: #8b919a;
-  --ink-faint: #4a5060;
-  --accent: #3b82f6;
-  --accent-muted: rgba(59, 130, 246, 0.12);
-  --positive: #22c55e;
-  --positive-muted: rgba(34, 197, 94, 0.10);
+  /* NGen branding: clean dark theme with orange primary */
+  --surface-0: #0a0c0f;
+  --surface-1: #111318;
+  --surface-2: #181b21;
+  --surface-3: #22262e;
+  --ink: #f0f2f5;
+  --ink-muted: #9ca3af;
+  --ink-faint: #5a6272;
+  --ngen-orange: #F15A22;
+  --ngen-orange-muted: rgba(241, 90, 34, 0.12);
+  --accent: #F15A22;
+  --accent-muted: rgba(241, 90, 34, 0.12);
+  --positive: #10b981;
+  --positive-muted: rgba(16, 185, 129, 0.10);
   --negative: #ef4444;
   --negative-muted: rgba(239, 68, 68, 0.10);
   --warn: #f59e0b;
   --warn-muted: rgba(245, 158, 11, 0.10);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: var(--surface-0);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 /* Scrollbar */
@@ -90,4 +94,68 @@ body::before {
   height: 2px;
   background: var(--accent);
   border-radius: 1px;
+}
+
+/* Slide-in animation for panels */
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0.8; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.slide-in { animation: slideIn 0.2s ease-out; }
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+
+/* Zebra striping for tables */
+.zebra-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+.zebra-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* Tab scroll indicator - fade edges */
+.tab-scroll-container {
+  position: relative;
+}
+.tab-scroll-container::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  background: linear-gradient(to right, transparent, var(--surface-0));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tab-scroll-container.has-overflow::after {
+  opacity: 1;
+}
+
+/* Live status dot */
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--positive);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.9); }
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

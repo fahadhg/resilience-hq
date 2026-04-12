@@ -314,11 +314,9 @@ export default function IndustryDetail({ section, codes, importData, usRates, su
           <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setDetailHS(null)}>
             <div className="absolute inset-0 bg-black/50" />
             <div
-              className="relative w-full max-w-xl bg-surface-0 border-l border-border overflow-y-auto"
+              className="relative w-full max-w-xl bg-surface-0 border-l border-border overflow-y-auto slide-in"
               onClick={e => e.stopPropagation()}
-              style={{ animation: 'slideIn 0.25s ease-out' }}
             >
-              <style>{`@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
 
               {/* Header */}
               <div className="sticky top-0 bg-surface-0 border-b border-border px-5 py-4 flex justify-between items-start z-10">

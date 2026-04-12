@@ -115,7 +115,7 @@ function MfgHealthModule() {
       {/* Sales by sector */}
       <SectionTitle>Monthly Sales by Sector (CAD millions, seasonally adjusted)</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Industry (NAICS)', 'Monthly sales', 'YoY change', 'Share of total'].map(h => (
@@ -260,7 +260,7 @@ function LabourModule() {
 
       <SectionTitle>Job Vacancies by Industry & Province</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Industry', 'Province', 'Vacancies', 'Rate', 'Period'].map(h => (
@@ -358,7 +358,7 @@ function InputCostModule() {
       {/* IPPI table */}
       <SectionTitle>Industrial Product Price Index (IPPI) — 2012=100</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Product', 'Latest (2025-01)', 'YoY', '3-month trend'].map(h => (
@@ -520,7 +520,7 @@ function ExportIntelModule() {
         Top Export Destinations {submitted ? `— Chapter ${chapterPrefix}` : '(All goods, 2024)'}
       </SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Country', 'Share', 'Value (2024)', 'FTA', chapterPrefix ? `Rate (ch ${chapterPrefix})` : 'FTA rate'].map(h => (
