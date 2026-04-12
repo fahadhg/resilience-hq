@@ -1,0 +1,72 @@
+name: Refresh Intel Data
+
+on:
+  # Every Tuesday at 9:00 AM ET (14:00 UTC)
+  schedule:
+    - cron: '0 14 * * 2'
+
+  # Also allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force commit even if no changes'
+        required: false
+        default: 'false'
+
+jobs:
+  refresh:
+    name: Fetch StatsCan data & redeploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write   # needed to commit updated JSON files
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run StatsCan fetch
+        id: fetch
+        run: |
+          python3 scripts/fetch-statcan-intel.py 2>&1 | tee /tmp/fetch-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet public/data/intel/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit & push updated data
+        if: steps.changes.outputs.changed == 'true' || github.event.inputs.force == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/intel/
+          git commit -m "chore: refresh StatsCan intel data $(date -u +'%Y-%m-%d')"
+          git push
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.changes.outputs.changed }}" = "true" ]; then
+            echo "### ✅ Data refreshed" >> $GITHUB_STEP_SUMMARY
+            echo "StatsCan data updated and pushed. Vercel will redeploy automatically." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ℹ️ No changes" >> $GITHUB_STEP_SUMMARY
+            echo "StatsCan data unchanged since last run." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/fetch-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
