@@ -5,9 +5,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Instrument Sans', 'system-ui', 'sans-serif'],
-        body: ['DM Sans', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       colors: {
         surface: {
@@ -24,6 +25,10 @@ module.exports = {
         accent: {
           DEFAULT: 'var(--accent)',
           muted: 'var(--accent-muted)',
+        },
+        ngen: {
+          DEFAULT: '#F15A22',
+          muted: 'rgba(241, 90, 34, 0.12)',
         },
         positive: { DEFAULT: 'var(--positive)', muted: 'var(--positive-muted)' },
         negative: { DEFAULT: 'var(--negative)', muted: 'var(--negative-muted)' },

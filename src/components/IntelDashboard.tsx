@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import clsx from 'clsx';
+import { Factory, Users, Package, Globe2 } from 'lucide-react';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const fmtB = (v: number | null | undefined) => {
@@ -44,7 +45,7 @@ function Badge({ label, color }: { label: string; color: 'green' | 'red' | 'yell
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[10px] font-semibold text-ink-muted uppercase tracking-wider mb-2 mt-5 first:mt-0">
+    <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3 mt-6 first:mt-0">
       {children}
     </div>
   );
@@ -52,10 +53,10 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function DataBanner({ source, generated }: { source?: string; generated?: string }) {
   return (
-    <div className="flex items-center gap-2 text-[10px] text-ink-faint mt-4 pt-3 border-t border-border">
-      <span className="w-1.5 h-1.5 rounded-full bg-positive inline-block" />
+    <div className="flex items-center gap-2 text-xs text-ink-faint mt-6 pt-4 border-t border-border">
+      <span className="live-dot" />
       <span>{source}</span>
-      {generated && <><span>·</span><span>Data period: {generated}</span></>}
+      {generated && <><span className="text-ink-muted">·</span><span>Data period: {generated}</span></>}
     </div>
   );
 }
@@ -115,7 +116,7 @@ function MfgHealthModule() {
       {/* Sales by sector */}
       <SectionTitle>Monthly Sales by Sector (CAD millions, seasonally adjusted)</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Industry (NAICS)', 'Monthly sales', 'YoY change', 'Share of total'].map(h => (
@@ -260,7 +261,7 @@ function LabourModule() {
 
       <SectionTitle>Job Vacancies by Industry & Province</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Industry', 'Province', 'Vacancies', 'Rate', 'Period'].map(h => (
@@ -358,7 +359,7 @@ function InputCostModule() {
       {/* IPPI table */}
       <SectionTitle>Industrial Product Price Index (IPPI) — 2012=100</SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Product', 'Latest (2025-01)', 'YoY', '3-month trend'].map(h => (
@@ -520,7 +521,7 @@ function ExportIntelModule() {
         Top Export Destinations {submitted ? `— Chapter ${chapterPrefix}` : '(All goods, 2024)'}
       </SectionTitle>
       <div className="overflow-x-auto mb-5">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-xs border-collapse zebra-table">
           <thead>
             <tr className="border-b border-border">
               {['Country', 'Share', 'Value (2024)', 'FTA', chapterPrefix ? `Rate (ch ${chapterPrefix})` : 'FTA rate'].map(h => (
@@ -574,44 +575,59 @@ function ExportIntelModule() {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 const MODULES = [
-  { id: 'mfg',    label: 'Mfg Health',    icon: '🏭', sub: 'Sales · Capacity utilization' },
-  { id: 'labour', label: 'Labour',         icon: '👷', sub: 'Vacancies · Employment' },
-  { id: 'costs',  label: 'Input Costs',   icon: '📦', sub: 'IPPI · RMPI · Alerts' },
-  { id: 'export', label: 'Export Intel',  icon: '🌐', sub: 'Partners · Tariff rates' },
+  { id: 'mfg',    label: 'Mfg Health',    icon: Factory, sub: 'Sales · Capacity utilization' },
+  { id: 'labour', label: 'Labour',         icon: Users, sub: 'Vacancies · Employment' },
+  { id: 'costs',  label: 'Input Costs',   icon: Package, sub: 'IPPI · RMPI · Alerts' },
+  { id: 'export', label: 'Export Intel',  icon: Globe2, sub: 'Partners · Tariff rates' },
 ] as const;
 
 export default function IntelDashboard() {
   const [active, setActive] = useState<string>('mfg');
   const current = MODULES.find(m => m.id === active)!;
+  const CurrentIcon = current.icon;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      <div className="mb-6">
-        <h1 className="font-display text-xl font-semibold tracking-tight mb-1">Intel Modules</h1>
-        <p className="text-xs text-ink-muted">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight mb-1.5">Intel Modules</h1>
+        <p className="text-sm text-ink-muted">
           Statistics Canada data · CBSA T2026 tariff overlay · Updated periodically
         </p>
       </div>
 
       {/* Module tabs */}
-      <div className="flex gap-0 border-b border-border mb-0 overflow-x-auto">
-        {MODULES.map(m => (
-          <button key={m.id} onClick={() => setActive(m.id)}
-            className={clsx(
-              'px-4 py-2.5 text-xs whitespace-nowrap transition-colors shrink-0',
-              active === m.id ? 'text-ink font-medium tab-active' : 'text-ink-muted hover:text-ink'
-            )}>
-            {m.icon} {m.label}
-          </button>
-        ))}
+      <div className="bg-surface-1 border border-border rounded-t-lg overflow-hidden">
+        <div className="flex gap-0 overflow-x-auto scrollbar-hide">
+          {MODULES.map(m => {
+            const Icon = m.icon;
+            const isActive = active === m.id;
+            return (
+              <button key={m.id} onClick={() => setActive(m.id)}
+                className={clsx(
+                  'px-4 py-3 text-sm whitespace-nowrap transition-all shrink-0 flex items-center gap-2 border-b-2',
+                  isActive 
+                    ? 'text-ink font-medium border-ngen bg-surface-2' 
+                    : 'text-ink-muted hover:text-ink border-transparent hover:bg-surface-2'
+                )}>
+                <Icon className="w-4 h-4" />
+                {m.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Module card */}
-      <div className="p-5 bg-surface-1 border border-border border-t-0 rounded-b-xl animate-fade-in">
-        <div className="mb-4 pb-3 border-b border-border flex items-center justify-between">
+      <div className="p-6 bg-surface-1 border border-border border-t-0 rounded-b-lg animate-fade-in">
+        <div className="mb-6 pb-4 border-b border-border flex items-start justify-between">
           <div>
-            <h2 className="font-display text-base font-semibold">{current.icon} {current.label}</h2>
-            <p className="text-xs text-ink-muted mt-0.5">{current.sub}</p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-lg bg-surface-2 flex items-center justify-center">
+                <CurrentIcon className="w-5 h-5 text-ngen" />
+              </div>
+              <h2 className="text-lg font-semibold">{current.label}</h2>
+            </div>
+            <p className="text-sm text-ink-muted">{current.sub}</p>
           </div>
         </div>
 
@@ -622,8 +638,8 @@ export default function IntelDashboard() {
       </div>
 
       {/* Footer */}
-      <div className="mt-4 text-[10px] text-ink-faint text-center">
-        StatsCan tables: 16-10-0117-01 · 16-10-0014-01 · 14-10-0325-01 · 18-10-0034-01 · 18-10-0267-01 · 12-10-0011-01
+      <div className="mt-6 text-xs text-ink-faint text-center">
+        <p className="leading-relaxed">StatsCan tables: 16-10-0117-01 · 16-10-0014-01 · 14-10-0325-01 · 18-10-0034-01 · 18-10-0267-01 · 12-10-0011-01</p>
       </div>
     </div>
   );

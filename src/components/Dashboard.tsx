@@ -258,33 +258,35 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       {/* Header */}
-      <div className="flex items-end justify-between mb-5">
+      <div className="flex items-end justify-between mb-6">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-2 h-2 rounded-full bg-positive animate-pulse" />
-            <h1 className="font-display text-xl font-semibold tracking-tight">Tariff Monitor</h1>
+          <div className="flex items-center gap-3 mb-1.5">
+            <span className="live-dot" />
+            <h1 className="text-xl font-semibold tracking-tight">Tariff Monitor</h1>
           </div>
-          <p className="text-xs text-ink-muted">CBSA T2026 · {stats.total.toLocaleString()} HS codes · StatsCan 2025 imports · Surtaxes: {STX.surtaxes.length} entries ({STX.generated})</p>
+          <p className="text-sm text-ink-muted">CBSA T2026 · {stats.total.toLocaleString()} HS codes · StatsCan 2025 imports · Surtaxes: {STX.surtaxes.length} entries ({STX.generated})</p>
         </div>
         <div className="text-right hidden sm:block">
-          <div className="text-[10px] text-ink-faint tracking-wider uppercase">Sources</div>
-          <div className="text-[11px] text-ink-muted">cbsa-asfc.gc.ca · statcan.gc.ca</div>
+          <div className="text-[10px] text-ink-faint tracking-wider uppercase mb-0.5">Sources</div>
+          <div className="text-xs text-ink-muted">cbsa-asfc.gc.ca · statcan.gc.ca</div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-border mb-5 overflow-x-auto">
-        {tabs.map((t, i) => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            className={clsx(
-              'relative px-4 py-2 text-xs whitespace-nowrap transition-colors shrink-0',
-              tab === t.id ? 'text-ink font-medium tab-active' : 'text-ink-muted hover:text-ink',
-              i > 0 && tabs[i-1].group !== t.group && 'ml-3'
-            )}>
-            {t.label}
-            {t.id==='alerts'&&affectedWatch.length>0&&<span className="ml-1 text-[9px] bg-negative/20 text-negative px-1 py-0.5 rounded-full">{affectedWatch.length}</span>}
-          </button>
-        ))}
+      <div className="relative tab-scroll-container has-overflow">
+        <div className="flex gap-0 border-b border-border mb-5 overflow-x-auto scrollbar-hide">
+          {tabs.map((t, i) => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className={clsx(
+                'relative px-4 py-2.5 text-sm whitespace-nowrap transition-colors shrink-0',
+                tab === t.id ? 'text-ink font-medium tab-active' : 'text-ink-muted hover:text-ink',
+                i > 0 && tabs[i-1].group !== t.group && 'ml-4'
+              )}>
+              {t.label}
+              {t.id==='alerts'&&affectedWatch.length>0&&<span className="ml-1.5 text-[10px] bg-negative/20 text-negative px-1.5 py-0.5 rounded-full font-medium">{affectedWatch.length}</span>}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ══════════ HOME ══════════ */}
@@ -351,10 +353,10 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
           <select value={sortBy} onChange={e=>setSortBy(e.target.value)} className="bg-surface-2 border border-border rounded px-3 py-2 text-sm text-ink"><option value="imp">Sort: imports</option><option value="rate">Sort: rate</option></select>
         </div>
         <div className="text-[11px] text-ink-faint mb-2">{filtered.length.toLocaleString()} results · page {pg+1}/{totalPg||1}</div>
-        <div className="overflow-x-auto"><table className="w-full text-xs border-collapse">
+        <div className="overflow-x-auto"><table className="w-full text-xs border-collapse zebra-table">
           <thead><tr className="border-b border-border">{['','HS','Description','MFN','Best FTA','Imports','Sources'].map(h=><th key={h} className={clsx('py-2 px-2 font-medium text-ink-faint text-[10px] uppercase tracking-wider',['MFN','Best FTA','Imports'].includes(h)?'text-right':'text-left')}>{h}</th>)}</tr></thead>
           <tbody>{paged.map(r=>{const inW=wl.includes(r.h);const imp=getImp(r.h);const best=getBestFTA(r);return(
-            <tr key={r.h} className="border-b border-border hover:bg-surface-2/30">
+            <tr key={r.h} className="border-b border-border/50 transition-colors">
               <td className="py-1.5 px-2 text-center"><span onClick={()=>toggle(r.h)} className={clsx('cursor-pointer text-sm',inW?'text-warn':'text-ink-faint/30 hover:text-ink-faint')}>{inW?'★':'☆'}</span></td>
               <td className="py-1.5 px-2"><span onClick={()=>openDetail(r.h)} className="font-mono font-medium text-accent hover:underline cursor-pointer">{r.h}</span></td>
               <td className="py-1.5 px-2 max-w-[180px] truncate text-ink-muted">{r.d}</td>
@@ -429,9 +431,9 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
             <Metric label="FTA savings" value={'$'+bomTotalSaving.toLocaleString()} accent="#22c55e" sub="If sourced via best FTA"/>
             <Metric label="Potential reduction" value={bomTotalDuty>0?Math.round(bomTotalSaving/bomTotalDuty*100)+'%':'—'} accent="#22c55e"/>
           </div>
-          <div className="overflow-x-auto"><table className="w-full text-xs border-collapse">
+          <div className="overflow-x-auto"><table className="w-full text-xs border-collapse zebra-table">
             <thead><tr className="border-b border-border">{['Part','HS','MFN','Best FTA','Annual duty','Saveable','Risk'].map(h=><th key={h} className="py-2 px-2 font-medium text-ink-faint text-[10px] uppercase tracking-wider text-left">{h}</th>)}</tr></thead>
-            <tbody>{bomItems.map((r,i)=>(<tr key={i} className="border-b border-border">
+            <tbody>{bomItems.map((r,i)=>(<tr key={i} className="border-b border-border/50 transition-colors">
               <td className="py-1.5 px-2 text-ink-muted">{r.description.slice(0,30)}</td>
               <td className="py-1.5 px-2 font-mono text-accent">{r.hsCode}</td>
               <td className="py-1.5 px-2 font-mono text-warn">{r.mfnRate}%</td>
@@ -463,9 +465,9 @@ export default function Dashboard({ tariffData, importData, usRates, surtaxData 
             <Metric label="Total annual impact" value={fmtVal(Math.abs(wiResults.reduce((s,r)=>s+r.annualImpact,0)))} accent={wiSurtax>0?'#ef4444':'#22c55e'} sub={wiSurtax>0?'Additional cost':'Savings'}/>
             <Metric label="Avg rate change" value={`${wiResults[0]?.currentRate||0}% → ${wiResults[0]?.newRate||0}%`} accent="#f59e0b"/>
           </div>
-          <div className="overflow-x-auto"><table className="w-full text-xs border-collapse">
+          <div className="overflow-x-auto"><table className="w-full text-xs border-collapse zebra-table">
             <thead><tr className="border-b border-border">{['HS','Description','Current','New','Annual impact','Import value'].map(h=><th key={h} className="py-2 px-2 font-medium text-ink-faint text-[10px] uppercase tracking-wider text-left">{h}</th>)}</tr></thead>
-            <tbody>{wiResults.slice(0,30).map(r=>(<tr key={r.hsCode} className="border-b border-border">
+            <tbody>{wiResults.slice(0,30).map(r=>(<tr key={r.hsCode} className="border-b border-border/50 transition-colors">
               <td className="py-1.5 px-2 font-mono text-accent">{r.hsCode.slice(0,7)}</td>
               <td className="py-1.5 px-2 text-ink-muted truncate max-w-[200px]">{r.description}</td>
               <td className="py-1.5 px-2 font-mono">{r.currentRate}%</td>
