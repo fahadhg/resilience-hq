@@ -11,6 +11,9 @@ const fs = require('fs');
 const path = require('path');
 
 const STATSCAN_WDS = 'https://www150.statcan.gc.ca/t1/wds/rest';
+const PROJECT_ROOT = path.join(__dirname, '..');
+const DATA_DIR = path.join(PROJECT_ROOT, 'public', 'data');
+const INTEL_DIR = path.join(DATA_DIR, 'intel');
 
 // ─── Vector IDs ────────────────────────────────────────────────────────────────
 
@@ -237,11 +240,10 @@ async function updateData() {
   };
 
   // ─── Update sections.json with real import values ────────────────────────────
-  const sectionsPath = path.join(__dirname, '../public/data/sections.json');
   let sections = [];
   
   try {
-    sections = JSON.parse(fs.readFileSync(sectionsPath, 'utf8'));
+    sections = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'sections.json'), 'utf8'));
   } catch (e) {
     console.error('Could not read sections.json:', e.message);
   }
@@ -262,21 +264,22 @@ async function updateData() {
   // ─── Write updated files ─────────────────────────────────────────────────────
   console.log('\nWriting updated data files...');
 
-  const dataDir = path.join(__dirname, '../public/data/intel');
-  
-  fs.writeFileSync(
-    path.join(dataDir, 'mfg-health.json'),
-    JSON.stringify(mfgHealth, null, 2)
-  );
+  // Ensure directories exist
+  if (!fs.existsSync(INTEL_DIR)) {
+    fs.mkdirSync(INTEL_DIR, { recursive: true });
+  }
+
+  const mfgHealthPath = path.join(INTEL_DIR, 'mfg-health.json');
+  const inputCostsPath = path.join(INTEL_DIR, 'input-costs.json');
+  const sectionFilePath = path.join(DATA_DIR, 'sections.json');
+
+  fs.writeFileSync(mfgHealthPath, JSON.stringify(mfgHealth, null, 2));
   console.log('   ✓ mfg-health.json');
 
-  fs.writeFileSync(
-    path.join(dataDir, 'input-costs.json'),
-    JSON.stringify(inputCosts, null, 2)
-  );
+  fs.writeFileSync(inputCostsPath, JSON.stringify(inputCosts, null, 2));
   console.log('   ✓ input-costs.json');
 
-  fs.writeFileSync(sectionsPath, JSON.stringify(sections, null, 2));
+  fs.writeFileSync(sectionFilePath, JSON.stringify(sections, null, 2));
   console.log('   ✓ sections.json');
 
   console.log(`\nData update complete! Generated: ${timestamp}`);
