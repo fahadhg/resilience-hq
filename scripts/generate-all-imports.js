@@ -1,12 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read tariff data
-const tariffPath = path.join(__dirname, '..', 'public', 'data', 'tariff.json');
-const sectionsPath = path.join(__dirname, '..', 'public', 'data', 'sections.json');
-const outputPath = path.join(__dirname, '..', 'public', 'data', 'imports.json');
+// Script is at /vercel/share/v0-project/scripts/generate-all-imports.js
+// So project root is __dirname/../
+const projectRoot = path.resolve(__dirname, '..');
+const tariffPath = path.join(projectRoot, 'public', 'data', 'tariff.json');
+const sectionsPath = path.join(projectRoot, 'public', 'data', 'sections.json');
+const outputPath = path.join(projectRoot, 'public', 'data', 'imports.json');
 
-console.log('[v0] Reading tariff data from:', tariffPath);
+console.log('[v0] Script dir:', __dirname);
+console.log('[v0] Project root:', projectRoot);
+console.log('[v0] Tariff path:', tariffPath);
+console.log('[v0] Tariff exists:', fs.existsSync(tariffPath));
+
+if (!fs.existsSync(tariffPath)) {
+  console.error('[v0] FATAL: tariff.json not found');
+  process.exit(1);
+}
 
 const tariff = JSON.parse(fs.readFileSync(tariffPath, 'utf8'));
 const sections = JSON.parse(fs.readFileSync(sectionsPath, 'utf8'));
