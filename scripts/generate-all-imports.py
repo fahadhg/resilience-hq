@@ -4,8 +4,8 @@ import os
 import sys
 from pathlib import Path
 
-# Get project root - script is in /vercel/share/v0-project/scripts/
-project_root = Path(__file__).parent.parent
+# Get project root - use hardcoded path since __file__ may not be available
+project_root = Path('/vercel/share/v0-project')
 tariff_path = project_root / 'public' / 'data' / 'tariff.json'
 sections_path = project_root / 'public' / 'data' / 'sections.json'
 output_path = project_root / 'public' / 'data' / 'imports.json'
