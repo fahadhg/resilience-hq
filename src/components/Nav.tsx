@@ -51,31 +51,13 @@ export default function Nav() {
             Intel
           </Link>
           <Link
-            href="/opportunities"
+            href="/procurement"
             className={clsx(
               'px-4 py-2 rounded-md text-sm transition-colors',
-              pathname?.startsWith('/opportunities') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
+              pathname?.startsWith('/procurement') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
             )}
           >
-            Opportunities
-          </Link>
-          <Link
-            href="/suppliers"
-            className={clsx(
-              'px-4 py-2 rounded-md text-sm transition-colors',
-              pathname?.startsWith('/suppliers') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
-            )}
-          >
-            Suppliers
-          </Link>
-          <Link
-            href="/organizations"
-            className={clsx(
-              'px-4 py-2 rounded-md text-sm transition-colors',
-              pathname?.startsWith('/organizations') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
-            )}
-          >
-            Organizations
+            Procurement
           </Link>
           <div className="w-px h-5 bg-border mx-2 hidden sm:block" />
           <a
