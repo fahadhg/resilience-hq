@@ -5,6 +5,17 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { ExternalLink } from 'lucide-react';
 
+function LiveBadge() {
+  const today = new Date().toISOString().slice(0, 10);
+  return (
+    <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-1 border border-border">
+      <span className="live-dot" />
+      <span className="text-[11px] text-ink-muted font-medium">Live Data</span>
+      <span className="text-[10px] text-ink-faint">{today}</span>
+    </div>
+  );
+}
+
 export default function Nav() {
   const pathname = usePathname();
   return (
@@ -72,11 +83,7 @@ export default function Nav() {
         </nav>
 
         {/* Data freshness badge */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-1 border border-border">
-          <span className="live-dot" />
-          <span className="text-[11px] text-ink-muted font-medium">Live Data</span>
-          <span className="text-[10px] text-ink-faint">2026-04-10</span>
-        </div>
+        <LiveBadge />
       </div>
     </header>
   );

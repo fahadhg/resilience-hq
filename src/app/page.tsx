@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Nav from '@/components/Nav';
+import TradeGlobe from '@/components/TradeGlobe';
 import { loadAllData } from '@/lib/loadData';
 import { fmtVal } from '@/lib/data';
 import type { HSSection } from '@/lib/data';
@@ -105,6 +106,11 @@ export default async function Home() {
             <StatTile label="Under Surtax" value={surtaxCodes.toLocaleString()} sub={`${surtaxData.surtaxes.length} active entries`} />
           </div>
         </div>
+
+        {/* ── Trade Globe ───────────────────────────────────────────────── */}
+        <section className="mb-12">
+          <TradeGlobe />
+        </section>
 
         {/* ── Industry sections grid ─────────────────────────────────────── */}
         <section className="mb-12">
