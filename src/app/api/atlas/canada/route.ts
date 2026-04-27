@@ -48,7 +48,7 @@ export async function GET(request: Request) {
 
       // Canada ECI history
       gql(`{
-        countryYear(countryId: 124, yearMin: 1995, yearMax: 2023) {
+        countryYear(countryId: 124, yearMin: 1995, yearMax: 2024) {
           year exportValue importValue eci eciFixed coi gdp gdppc growthProj
         }
       }`),

@@ -161,7 +161,7 @@ function TreemapTooltip({ active, payload }: any) {
 type SortKey = 'exportValue' | 'pci' | 'exportRca' | 'globalMarketShare';
 
 export default function AtlasExportBasket() {
-  const [year, setYear] = useState(2022);
+  const [year, setYear] = useState(2024);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [colorBy, setColorBy] = useState<'sector' | 'complexity'>('sector');
@@ -251,7 +251,7 @@ export default function AtlasExportBasket() {
       ? sortAsc ? <ChevronUp className="w-3 h-3 inline" /> : <ChevronDown className="w-3 h-3 inline" />
       : <ChevronDown className="w-3 h-3 inline opacity-30" />;
 
-  const years = Array.from({ length: 2022 - 1995 + 1 }, (_, i) => 2022 - i);
+  const years = Array.from({ length: 2024 - 1995 + 1 }, (_, i) => 2024 - i);
 
   if (loading) {
     return (
@@ -519,7 +519,7 @@ export default function AtlasExportBasket() {
       {/* ── ECI Trend ───────────────────────────────────────────────────────── */}
       <div className="bg-surface-1 border border-border rounded-xl p-4">
         <h2 className="text-sm font-semibold mb-1">Economic Complexity Index (ECI) — Canada</h2>
-        <p className="text-xs text-ink-faint mb-4">2000–2022 · Higher = more complex export basket</p>
+        <p className="text-xs text-ink-faint mb-4">2000–2024 · Higher = more complex export basket</p>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={eciTrend} margin={{ left: 0, right: 16, top: 4, bottom: 0 }}>
