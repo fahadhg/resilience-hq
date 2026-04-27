@@ -22,9 +22,8 @@ export default function Nav() {
     <header className="border-b border-border bg-surface-0/95 backdrop-blur-md sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <span className="font-semibold text-sm tracking-tight leading-none group-hover:text-ngen transition-colors">ResilienceHQ</span>
-          <span className="text-ink-faint text-[10px] hidden sm:block">Canadian Tariff Intelligence</span>
+        <Link href="/" className="shrink-0 group">
+          <span className="font-semibold text-sm tracking-tight group-hover:text-ngen transition-colors">ResilienceHQ</span>
         </Link>
 
         {/* Nav links */}
