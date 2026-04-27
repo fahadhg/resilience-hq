@@ -462,7 +462,7 @@ export default function ExportsComplexity() {
         <h1 className="text-2xl font-bold tracking-tight mb-1">Canada Exports & Economic Complexity</h1>
         <p className="text-sm text-ink-muted">
           Export market concentration, product complexity (PCI), and Economic Complexity Index (ECI)
-          — sourced from Statistics Canada and the Harvard Atlas of Economic Complexity.
+          sourced from Statistics Canada and the Harvard Atlas.
         </p>
       </div>
 

@@ -32,7 +32,7 @@ const sectorColor = (code: string) => SECTOR_COLORS[code] ?? '#888888';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmtUSD = (v: number | null | undefined) => {
-  if (v == null) return '—';
+  if (v == null) return '';
   if (v >= 1e12) return `$${(v / 1e12).toFixed(2)}T`;
   if (v >= 1e9)  return `$${(v / 1e9).toFixed(2)}B`;
   if (v >= 1e6)  return `$${(v / 1e6).toFixed(0)}M`;
@@ -40,10 +40,10 @@ const fmtUSD = (v: number | null | undefined) => {
 };
 
 const fmtPct = (v: number | null | undefined, decimals = 2) =>
-  v == null ? '—' : `${(v * 100).toFixed(decimals)}%`;
+  v == null ? '' : `${(v * 100).toFixed(decimals)}%`;
 
 const fmtShare = (v: number | null | undefined) =>
-  v == null ? '—' : `${v.toFixed(2)}%`;
+  v == null ? '' : `${v.toFixed(2)}%`;
 
 function pciColor(pci: number | null): string {
   if (pci == null) return '#5a6272';
@@ -53,7 +53,7 @@ function pciColor(pci: number | null): string {
   return '#ef4444';
 }
 function pciLabel(pci: number | null) {
-  if (pci == null) return '—';
+  if (pci == null) return '';
   if (pci >= 1.5)  return 'Very High';
   if (pci >= 0.5)  return 'High';
   if (pci >= -0.5) return 'Medium';
@@ -166,7 +166,7 @@ function TreemapTooltip({ active, payload }: any) {
         {/* header */}
         <div>
           <div className="text-[10px] uppercase tracking-wider font-medium mb-0.5" style={{ color: fill }}>
-            {d.sector ?? '—'}
+            {d.sector}
           </div>
           <div className="font-semibold text-sm leading-tight">{d.name}</div>
           <div className="font-mono text-[10px] text-ink-faint mt-0.5">HS {d.code}</div>
@@ -319,17 +319,9 @@ export default function AtlasExportBasket() {
       {/* ── Header ────────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">🇨🇦</span>
-            <h1 className="text-2xl font-bold tracking-tight">Canada — Export Basket</h1>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight mb-1">Canada Export Basket</h1>
           <p className="text-sm text-ink-muted max-w-xl">
-            Export structure, product complexity (PCI) and revealed comparative advantage (RCA)
-            {' '}— live from the{' '}
-            <a href="https://atlas.hks.harvard.edu/countries/124/export-basket"
-               target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
-              Harvard Atlas of Economic Complexity
-            </a>.
+            Export structure, product complexity (PCI) and revealed comparative advantage (RCA).
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -347,9 +339,9 @@ export default function AtlasExportBasket() {
       {/* ── Stat cards ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <StatCard label="Total Exports"      value={fmtUSD(data.totalExports)}           sub={`${year} merchandise`}  icon={Globe2} />
-        <StatCard label="ECI Score"          value={latestEci?.eci?.toFixed(3) ?? '—'}   sub="Economic Complexity Index" icon={BarChart2} />
-        <StatCard label="GDP"                value={fmtUSD(latestEci?.gdp)}              sub={`GDPpc $${latestEci?.gdppc?.toLocaleString() ?? '—'}`} icon={TrendingUp} />
-        <StatCard label="Products Exported"  value={data.products?.length?.toLocaleString() ?? '—'}
+        <StatCard label="ECI Score"          value={latestEci?.eci?.toFixed(3) ?? ''}   sub="Economic Complexity Index" icon={BarChart2} />
+        <StatCard label="GDP"                value={fmtUSD(latestEci?.gdp)}              sub={latestEci?.gdppc ? `GDPpc $${latestEci.gdppc.toLocaleString()}` : undefined} icon={TrendingUp} />
+        <StatCard label="Products Exported"  value={data.products?.length?.toLocaleString() ?? ''}
           sub={`RCA ≥ 1: ${data.products?.filter((p: any) => (p.exportRca ?? 0) >= 1).length}`} icon={BarChart2} />
       </div>
 
@@ -486,20 +478,20 @@ export default function AtlasExportBasket() {
                   <td className="py-2 px-3 text-ink-muted hidden sm:table-cell">{p.sector}</td>
                   <td className="py-2 px-3 text-right font-mono">{fmtUSD(p.exportValue)}</td>
                   <td className="py-2 px-3 text-right font-mono text-ink-muted hidden sm:table-cell">
-                    {p.share != null ? `${p.share.toFixed(2)}%` : '—'}
+                    {p.share != null ? `${p.share.toFixed(2)}%` : ''}
                   </td>
                   <td className="py-2 px-3 text-right font-mono text-ink-muted hidden md:table-cell">
-                    {p.globalMarketShare != null ? fmtPct(p.globalMarketShare) : '—'}
+                    {fmtPct(p.globalMarketShare)}
                   </td>
                   <td className="py-2 px-3 text-right">
                     {p.exportRca != null
                       ? <span className={clsx('font-mono', p.exportRca >= 1 ? 'text-positive font-semibold' : 'text-ink-muted')}>{p.exportRca.toFixed(2)}</span>
-                      : <span className="text-ink-faint">—</span>}
+                      : null}
                   </td>
                   <td className="py-2 px-3 text-right hidden lg:table-cell">
                     {p.pci != null
                       ? <span className="font-mono text-[10px]" style={{ color: pciColor(p.pci) }}>{p.pci > 0 ? '+' : ''}{p.pci.toFixed(2)}</span>
-                      : <span className="text-ink-faint">—</span>}
+                      : null}
                   </td>
                 </tr>
               ))}

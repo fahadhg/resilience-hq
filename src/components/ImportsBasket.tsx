@@ -32,14 +32,14 @@ function darken(hex: string): string {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmtUSD = (v: number | null | undefined) => {
-  if (v == null) return '—';
+  if (v == null) return '';
   if (Math.abs(v) >= 1e12) return `$${(v / 1e12).toFixed(2)}T`;
   if (Math.abs(v) >= 1e9)  return `$${(v / 1e9).toFixed(2)}B`;
   if (Math.abs(v) >= 1e6)  return `$${(v / 1e6).toFixed(0)}M`;
   return `$${v.toLocaleString()}`;
 };
-const fmtPct = (v: number | null | undefined) => v == null ? '—' : `${(v * 100).toFixed(2)}%`;
-const fmtShare = (v: number | null | undefined) => v == null ? '—' : `${v.toFixed(2)}%`;
+const fmtPct = (v: number | null | undefined) => v == null ? '' : `${(v * 100).toFixed(2)}%`;
+const fmtShare = (v: number | null | undefined) => v == null ? '' : `${v.toFixed(2)}%`;
 
 function pciColor(pci: number | null) {
   if (pci == null) return '#5a6272';
@@ -47,7 +47,7 @@ function pciColor(pci: number | null) {
   if (pci >= -0.5) return '#f59e0b'; return '#ef4444';
 }
 function pciLabel(pci: number | null) {
-  if (pci == null) return '—';
+  if (pci == null) return '';
   if (pci >= 1.5) return 'Very High'; if (pci >= 0.5) return 'High';
   if (pci >= -0.5) return 'Medium'; return 'Low';
 }
@@ -121,7 +121,7 @@ function TreemapTooltip({ active, payload }: any) {
       <div className="p-3.5 space-y-3">
         <div>
           <div className="text-[10px] uppercase tracking-wider font-medium mb-0.5" style={{ color: fill }}>
-            {d.sector ?? '—'}
+            {d.sector}
           </div>
           <div className="font-semibold text-sm leading-tight">{d.name}</div>
           <div className="font-mono text-[10px] text-ink-faint mt-0.5">HS {d.code}</div>
@@ -270,16 +270,9 @@ export default function ImportsBasket() {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">🇨🇦</span>
-            <h1 className="text-2xl font-bold tracking-tight">Canada — Import Basket</h1>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight mb-1">Canada Import Basket</h1>
           <p className="text-sm text-ink-muted max-w-xl">
-            Import structure and product complexity — live from the{' '}
-            <a href="https://atlas.hks.harvard.edu/countries/124/export-basket"
-              target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
-              Harvard Atlas of Economic Complexity
-            </a>.
+            Import structure, product complexity (PCI) and trade balance.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -295,8 +288,8 @@ export default function ImportsBasket() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <StatCard label="Total Imports"   value={fmtUSD(data.totalImports)}       sub={`${year} merchandise`}  icon={Globe2} />
         <StatCard label="Trade Balance"   value={fmtUSD(data.tradeBalance)}        sub={isDeficit ? 'Trade deficit' : 'Trade surplus'} icon={isDeficit ? TrendingDown : TrendingUp} warn={isDeficit} />
-        <StatCard label="ECI Score"       value={latestEci?.eci?.toFixed(3) ?? '—'} sub="Economic Complexity Index" icon={BarChart2} />
-        <StatCard label="Import-dependent" value={String(data.products?.filter((p: any) => (p.exportRca ?? 0) < 1 && p.importValue > 1e8).length ?? '—')}
+        <StatCard label="ECI Score"       value={latestEci?.eci?.toFixed(3) ?? ''} sub="Economic Complexity Index" icon={BarChart2} />
+        <StatCard label="Import-dependent" value={String(data.products?.filter((p: any) => (p.exportRca ?? 0) < 1 && p.importValue > 1e8).length ?? '')}
           sub="products with RCA < 1 & imports > $100M" icon={TrendingDown} />
       </div>
 
@@ -410,18 +403,18 @@ export default function ImportsBasket() {
                   <td className="py-2 px-3 text-ink-muted hidden sm:table-cell">{p.sector}</td>
                   <td className="py-2 px-3 text-right font-mono">{fmtUSD(p.importValue)}</td>
                   <td className="py-2 px-3 text-right font-mono text-ink-muted hidden sm:table-cell">
-                    {p.share != null ? `${p.share.toFixed(2)}%` : '—'}
+                    {p.share != null ? `${p.share.toFixed(2)}%` : ''}
                   </td>
                   <td className="py-2 px-3 text-right font-mono text-ink-muted hidden md:table-cell">{fmtUSD(p.exportValue)}</td>
                   <td className="py-2 px-3 text-right">
                     {p.exportRca != null
                       ? <span className={clsx('font-mono', p.exportRca >= 1 ? 'text-positive font-semibold' : 'text-negative')}>{p.exportRca.toFixed(2)}</span>
-                      : <span className="text-ink-faint">—</span>}
+                      : null}
                   </td>
                   <td className="py-2 px-3 text-right hidden lg:table-cell">
                     {p.pci != null
                       ? <span className="font-mono text-[10px]" style={{ color: pciColor(p.pci) }}>{p.pci > 0 ? '+' : ''}{p.pci.toFixed(2)}</span>
-                      : <span className="text-ink-faint">—</span>}
+                      : null}
                   </td>
                 </tr>
               ))}
