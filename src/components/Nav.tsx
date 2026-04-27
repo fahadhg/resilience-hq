@@ -68,6 +68,15 @@ export default function Nav() {
           >
             Exports
           </Link>
+          <Link
+            href="/atlas"
+            className={clsx(
+              'px-4 py-2 rounded-md text-sm transition-colors',
+              pathname?.startsWith('/atlas') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
+            )}
+          >
+            Atlas
+          </Link>
           <div className="w-px h-5 bg-border mx-2 hidden sm:block" />
           <a
             href="https://www.ngen.ca"
