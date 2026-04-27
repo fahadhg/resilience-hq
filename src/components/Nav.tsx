@@ -39,7 +39,7 @@ export default function Nav() {
               pathname?.startsWith('/browse') ? 'bg-surface-2 text-ink font-medium' : 'text-ink-muted hover:text-ink hover:bg-surface-1'
             )}
           >
-            Toolkit
+            Imports
           </Link>
           <Link
             href="/intel"
